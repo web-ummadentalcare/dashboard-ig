@@ -37,6 +37,21 @@ def fail(msg: str) -> None:
     sys.exit(1)
 
 
+def get_dataset_id(run) -> str:
+    """apify-client has changed what `.call()` returns across versions —
+    sometimes a plain dict, sometimes a typed object with snake_case
+    attributes. Handle both so we don't break again on the next upgrade."""
+    if isinstance(run, dict):
+        dataset_id = run.get("defaultDatasetId") or run.get("default_dataset_id")
+    else:
+        dataset_id = getattr(run, "default_dataset_id", None) or getattr(
+            run, "defaultDatasetId", None
+        )
+    if not dataset_id:
+        fail(f"Could not find defaultDatasetId on actor run result: {run!r}")
+    return dataset_id
+
+
 def run_post_scraper(client: ApifyClient) -> list[dict]:
     """Pull recent posts for the account via apify/instagram-post-scraper."""
     run_input = {
@@ -44,7 +59,7 @@ def run_post_scraper(client: ApifyClient) -> list[dict]:
         "resultsLimit": RESULTS_LIMIT,
     }
     run = client.actor("apify/instagram-post-scraper").call(run_input=run_input)
-    dataset_id = run["defaultDatasetId"]
+    dataset_id = get_dataset_id(run)
     return list(client.dataset(dataset_id).iterate_items())
 
 
@@ -52,7 +67,7 @@ def run_profile_scraper(client: ApifyClient) -> dict:
     """Pull profile-level info (followers, bio, etc) via apify/instagram-profile-scraper."""
     run_input = {"usernames": [USERNAME]}
     run = client.actor("apify/instagram-profile-scraper").call(run_input=run_input)
-    dataset_id = run["defaultDatasetId"]
+    dataset_id = get_dataset_id(run)
     items = list(client.dataset(dataset_id).iterate_items())
     return items[0] if items else {}
 
