@@ -3,214 +3,382 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>@ummadentalcare — Analytics</title>
+<title>@ummadentalcare — Instagram Analytics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:       #f7f7f5;
-  --white:    #ffffff;
-  --border:   #e8e6e1;
-  --border2:  #d1cec8;
-  --ink:      #1a1a1a;
-  --muted:    #6b6b6b;
-  --dim:      #a0a0a0;
-  --accent:   #5046e4;
-  --accent-lt:#eeedfd;
-  --green:    #16a34a;
-  --green-lt: #dcfce7;
-  --red:      #dc2626;
-  --red-lt:   #fee2e2;
-  --orange:   #d97706;
-  --orange-lt:#fef3c7;
-  --r:        10px;
-  --r-sm:     7px;
+  --bg:        #f7f7f5;
+  --white:     #ffffff;
+  --border:    #e8e6e1;
+  --border2:   #d1cec8;
+  --ink:       #1a1a1a;
+  --muted:     #6b6b6b;
+  --dim:       #a0a0a0;
+  --accent:    #5046e4;
+  --accent-lt: #eeedfd;
+  --green:     #16a34a;
+  --green-lt:  #dcfce7;
+  --red:       #dc2626;
+  --red-lt:    #fee2e2;
+  --orange:    #d97706;
+  --orange-lt: #fef3c7;
+  --r:         10px;
+  --r-sm:      7px;
 }
 
 html { font-size: 16px; -webkit-tap-highlight-color: transparent; }
 body {
-  background: var(--bg);
-  color: var(--ink);
+  background: var(--bg); color: var(--ink);
   font-family: 'Inter', system-ui, sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
-  min-height: 100vh;
+  font-size: 14px; line-height: 1.5; min-height: 100vh;
 }
 
-/* ── LAYOUT ── */
-.page { max-width: 430px; margin: 0 auto; padding: 0 0 40px; }
+.page { max-width: 430px; margin: 0 auto; padding: 0 0 48px; }
 
 /* ── HEADER ── */
 .header {
-  background: var(--white);
-  border-bottom: 1px solid var(--border);
-  padding: 20px 16px 16px;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  background: var(--white); border-bottom: 1px solid var(--border);
+  padding: 20px 16px 12px; position: sticky; top: 0; z-index: 10;
 }
 .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.header-handle {
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: -0.3px;
-}
+.header-handle { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
 .header-handle span { color: var(--accent); }
 .scrape-badge {
-  font-size: 10px;
-  color: var(--dim);
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 3px 8px;
+  font-size: 10px; color: var(--dim);
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 20px; padding: 3px 8px;
 }
+.scrape-badge.loading { color: var(--orange); border-color: var(--orange); background: var(--orange-lt); }
+.scrape-badge.error   { color: var(--red);    border-color: var(--red);    background: var(--red-lt); }
+
 .tab-row {
-  display: flex;
-  gap: 4px;
-  background: var(--bg);
-  border-radius: 8px;
-  padding: 3px;
+  display: flex; gap: 3px;
+  background: var(--bg); border-radius: 8px; padding: 3px;
 }
 .tab-btn {
-  flex: 1;
-  background: transparent;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 8px;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--muted);
-  cursor: pointer;
-  transition: all 0.15s;
-  font-family: inherit;
+  flex: 1; background: transparent; border: none;
+  border-radius: 6px; padding: 6px 4px;
+  font-size: 11px; font-weight: 500; color: var(--muted);
+  cursor: pointer; transition: all 0.15s; font-family: inherit;
+  white-space: nowrap;
 }
 .tab-btn.active {
-  background: var(--white);
-  color: var(--ink);
+  background: var(--white); color: var(--ink);
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 
-/* ── SECTION HEADING ── */
-.section { padding: 16px 16px 0; }
+/* sub-tab (used inside Indeks & Insights so you don't have to scroll to find a section) */
+.subtab-row {
+  display: flex; gap: 3px;
+  background: var(--bg); border-radius: 8px; padding: 3px;
+  margin: 12px 16px 0;
+}
+.subtab-btn {
+  flex: 1; background: transparent; border: none;
+  border-radius: 6px; padding: 7px 4px;
+  font-size: 10.5px; font-weight: 500; color: var(--muted);
+  cursor: pointer; transition: all 0.15s; font-family: inherit;
+  white-space: nowrap; text-align: center;
+}
+.subtab-btn.active {
+  background: var(--white); color: var(--accent);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.subpane { display: none; }
+.subpane.active { display: block; }
+
+/* ── DATE BAR ── */
+.date-range-bar {
+  display: flex; align-items: center; gap: 6px;
+  padding: 10px 16px; background: var(--white);
+  border-bottom: 1px solid var(--border); flex-wrap: wrap;
+}
+.date-range-label {
+  font-size: 10px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.06em; flex-shrink: 0;
+}
+.date-input {
+  border: 1px solid var(--border); border-radius: 6px;
+  padding: 5px 8px; font-size: 11px; font-family: inherit;
+  color: var(--ink); background: var(--bg); flex: 1; min-width: 110px;
+}
+.date-input:focus { outline: none; border-color: var(--accent); }
+.date-sep { font-size: 11px; color: var(--dim); }
+.date-apply-btn {
+  background: var(--accent); color: white; border: none;
+  border-radius: 6px; padding: 5px 12px; font-size: 11px;
+  font-weight: 600; font-family: inherit; cursor: pointer; flex-shrink: 0;
+  transition: opacity 0.15s;
+}
+.date-apply-btn:hover { opacity: 0.85; }
+/* centered, fixed (non-scrolling) preset row that fits mobile width exactly */
+.date-preset-row {
+  display: flex; gap: 4px; padding: 6px 12px 10px;
+  background: var(--white); border-bottom: 1px solid var(--border);
+  justify-content: center;
+}
+.preset-btn {
+  flex: 1 1 0; min-width: 0; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 20px; padding: 5px 4px; font-size: 10px;
+  font-weight: 500; color: var(--muted); cursor: pointer;
+  font-family: inherit; transition: all 0.15s;
+  text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.preset-btn.active, .preset-btn:hover {
+  background: var(--accent-lt); border-color: var(--accent); color: var(--accent);
+}
+
+/* ── SECTION ── */
+.section { padding: 14px 16px 0; }
 .section-title {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--dim);
-  margin-bottom: 10px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--dim); margin-bottom: 10px;
 }
 
 /* ── CARD ── */
 .card {
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 14px;
-  margin-bottom: 10px;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 14px; margin-bottom: 10px;
 }
-.card + .card { margin-top: 0; }
 
-/* ── KPI ROW ── */
-.kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 16px 16px 0; }
-.kpi-card {
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 12px 14px;
+/* ── TOP 3 ── */
+.top3-grid { display: flex; flex-direction: column; gap: 8px; }
+.top3-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 10px 12px;
+  display: flex; gap: 10px; align-items: center;
 }
-.kpi-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 400; }
-.kpi-value { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; line-height: 1; }
-.kpi-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+.top3-rank { font-size: 18px; font-weight: 800; color: var(--border2); min-width: 24px; flex-shrink: 0; line-height: 1; }
+.top3-rank.gold   { color: #f59e0b; }
+.top3-rank.silver { color: #94a3b8; }
+.top3-rank.bronze { color: #b45309; }
+.top3-thumb {
+  width: 48px; height: 48px; border-radius: 7px; flex-shrink: 0;
+  background: var(--bg); border: 1px solid var(--border);
+  overflow: hidden; display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.top3-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.top3-body { flex: 1; min-width: 0; }
+.top3-cap {
+  font-size: 12px; font-weight: 500; color: var(--ink);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px;
+}
+.top3-cap a { color: inherit; text-decoration: none; }
+.top3-cap a:hover { text-decoration: underline; }
+.top3-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.top3-stat { font-size: 11px; color: var(--muted); }
+.top3-er   { font-size: 11px; font-weight: 700; color: var(--accent); }
+.top3-why  {
+  font-size: 10px; font-weight: 600; color: var(--accent);
+  background: var(--accent-lt); border-radius: 4px; padding: 1px 6px;
+  display: inline-block; margin-top: 4px;
+}
 
-/* ── DELTA BADGES ── */
-.delta {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 2px 7px;
-  border-radius: 20px;
+/* ── OVERVIEW ── */
+.ov-health-card {
+  margin: 14px 16px 0;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px;
 }
-.delta.up   { background: var(--green-lt);  color: var(--green); }
-.delta.down { background: var(--red-lt);    color: var(--red); }
-.delta.flat { background: var(--orange-lt); color: var(--orange); }
+.ov-health-emoji { font-size: 26px; flex-shrink: 0; }
+.ov-health-title { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.ov-health-desc  { font-size: 11px; color: var(--muted); line-height: 1.5; }
 
-/* ── GROWTH CARDS ── */
-.growth-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.growth-card {
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 12px;
+.ov-kpi-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 8px; padding: 10px 16px 0;
 }
-.growth-period { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); margin-bottom: 8px; }
-.growth-er-row { display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px; }
-.growth-er { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
-.growth-prev { font-size: 11px; color: var(--muted); }
-.growth-bar-track { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 8px; }
-.growth-bar-fill  { height: 100%; border-radius: 2px; background: var(--accent); transition: width 0.8s ease; }
+.ov-kpi {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 10px 12px;
+}
+.ov-kpi-label { font-size: 10px; color: var(--muted); margin-bottom: 3px; line-height: 1.3; }
+.ov-kpi-value { font-size: 18px; font-weight: 700; letter-spacing: -0.4px; line-height: 1; }
+.ov-kpi-sub   { font-size: 10px; color: var(--muted); margin-top: 3px; }
+.ov-kpi.accent .ov-kpi-value { color: var(--accent); }
+
+.ov-signal-row {
+  display: flex; gap: 6px; padding: 10px 16px 0; flex-wrap: wrap;
+}
+.ov-signal {
+  display: flex; align-items: center; gap: 5px;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 20px; padding: 5px 10px; font-size: 11px;
+  font-weight: 500; flex-shrink: 0;
+}
+.ov-signal-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+.ov-best-type-card {
+  margin: 10px 16px 0;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 12px 14px;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+}
+.ov-best-type-left { display: flex; align-items: center; gap: 10px; }
+.ov-best-type-icon { font-size: 22px; }
+.ov-best-type-label { font-size: 10px; color: var(--muted); margin-bottom: 2px; }
+.ov-best-type-name  { font-size: 14px; font-weight: 700; }
+.ov-best-type-er    { text-align: right; }
+.ov-best-type-er-val{ font-size: 18px; font-weight: 700; color: var(--accent); }
+.ov-best-type-er-sub{ font-size: 10px; color: var(--muted); }
+
+.ov-consistency {
+  margin: 10px 16px 0;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 12px 14px;
+}
+.ov-consistency-label { font-size: 10px; color: var(--muted); margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+.ov-week-dots { display: flex; gap: 5px; margin-bottom: 6px; }
+.ov-week-dot  { flex: 1; height: 8px; border-radius: 2px; background: var(--border); }
+.ov-week-dot.active { background: var(--accent); }
+.ov-week-dot.low    { background: var(--accent); opacity: 0.35; }
+.ov-consistency-desc { font-size: 11px; color: var(--muted); }
+.ov-consistency-desc strong { color: var(--ink); }
+
+/* ── GROWTH ── */
+.g-status-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 16px; margin-bottom: 10px;
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.g-status-emoji { font-size: 28px; flex-shrink: 0; line-height: 1; }
+.g-status-title { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+.g-status-desc  { font-size: 12px; color: var(--muted); line-height: 1.55; }
+
+.g-compare-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 14px; margin-bottom: 10px;
+}
+.g-compare-label {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.07em; color: var(--dim); margin-bottom: 10px;
+}
+.g-compare-row {
+  display: grid; grid-template-columns: 1fr 32px 1fr; gap: 0;
+  align-items: center; margin-bottom: 10px;
+}
+.g-period-block.curr { text-align: right; }
+.g-period-name { font-size: 10px; color: var(--muted); margin-bottom: 3px; }
+.g-period-er   { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+.g-period-posts{ font-size: 10px; color: var(--dim); margin-top: 2px; }
+.g-arrow-col   { text-align: center; font-size: 18px; }
+.g-bar-compare { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+.g-bar-col     { flex: 1; }
+.g-bar-name    { font-size: 10px; color: var(--dim); margin-bottom: 4px; }
+.g-bar-track   { height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden; }
+.g-bar-fill    { height: 100%; border-radius: 3px; transition: width 0.9s cubic-bezier(0.16,1,0.3,1); width: 0; }
+.g-verdict     {
+  margin-top: 10px; padding: 8px 10px;
+  border-radius: var(--r-sm); font-size: 11px; line-height: 1.6;
+}
+
+.g-bench-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 14px; margin-bottom: 10px;
+}
+.g-bench-label {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.07em; color: var(--dim); margin-bottom: 10px;
+}
+.g-bench-track {
+  position: relative; height: 8px;
+  background: linear-gradient(to right, var(--red-lt) 0%, var(--orange-lt) 33%, var(--green-lt) 66%, var(--accent-lt) 100%);
+  border-radius: 4px; margin-bottom: 6px;
+}
+.g-bench-marker {
+  position: absolute; top: -4px; width: 16px; height: 16px;
+  background: var(--accent); border: 2px solid var(--white);
+  border-radius: 50%; transform: translateX(-50%);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  transition: left 0.8s cubic-bezier(0.16,1,0.3,1);
+}
+.g-bench-ticks {
+  display: flex; justify-content: space-between;
+  font-size: 9px; color: var(--dim); margin-bottom: 8px;
+}
+.g-bench-verdict {
+  font-size: 12px; font-weight: 600; text-align: center;
+  padding: 6px 10px; border-radius: var(--r-sm);
+}
+
+.g-chart-toggle {
+  display: flex; gap: 4px; margin-bottom: 10px;
+  background: var(--bg); border-radius: 7px; padding: 3px;
+}
+.g-chart-btn {
+  flex: 1; background: transparent; border: none; border-radius: 5px;
+  padding: 5px 8px; font-size: 11px; font-weight: 500; color: var(--muted);
+  cursor: pointer; font-family: inherit; transition: all 0.15s;
+}
+.g-chart-btn.active {
+  background: var(--white); color: var(--ink);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.g-takeaway-list { display: flex; flex-direction: column; gap: 6px; }
+.g-takeaway {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: var(--bg); border-radius: var(--r-sm); padding: 10px;
+}
+.g-takeaway-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+.g-takeaway-text { font-size: 12px; line-height: 1.55; color: var(--ink); }
+.g-takeaway-text span { color: var(--muted); }
 
 /* ── CHART ── */
 .chart-wrap { position: relative; width: 100%; }
 
-/* ── TOP POSTS ── */
+/* ── FREQ BARS ── */
+.freq-item {
+  display: grid; grid-template-columns: 56px 1fr 28px;
+  gap: 8px; align-items: center; margin-bottom: 8px;
+}
+.freq-label { font-size: 11px; color: var(--muted); text-align: right; }
+.freq-track { height: 20px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+.freq-fill {
+  height: 100%; border-radius: 4px; background: var(--accent); opacity: 0.7;
+  display: flex; align-items: center; padding-left: 6px;
+  font-size: 9px; font-weight: 600; color: white;
+  width: 0; transition: width 0.8s cubic-bezier(0.16,1,0.3,1);
+}
+.freq-val { font-size: 11px; font-weight: 600; color: var(--ink); text-align: right; }
+
+/* ── POST LIST ── */
 .post-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
 }
 .post-item:last-child { border-bottom: none; padding-bottom: 0; }
-.post-rank {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--dim);
-  min-width: 18px;
-  flex-shrink: 0;
-  padding-top: 1px;
-}
+.post-rank { font-size: 13px; font-weight: 700; color: var(--dim); min-width: 18px; flex-shrink: 0; padding-top: 1px; }
 .post-thumb {
-  width: 44px;
-  height: 44px;
-  border-radius: 6px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  flex-shrink: 0;
+  width: 44px; height: 44px; border-radius: 6px;
+  background: var(--bg); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0; overflow: hidden;
 }
+.post-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .post-body { flex: 1; min-width: 0; }
 .post-caption {
-  font-size: 12px;
-  line-height: 1.4;
-  color: var(--ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-bottom: 5px;
-  font-weight: 500;
+  font-size: 12px; line-height: 1.4; color: var(--ink);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-bottom: 5px; font-weight: 500;
 }
+.post-caption a { color: inherit; text-decoration: none; }
+.post-caption a:hover { text-decoration: underline; }
 .post-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .post-tag {
-  font-size: 10px;
-  font-weight: 500;
-  padding: 1px 6px;
-  border-radius: 4px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  color: var(--muted);
+  font-size: 10px; font-weight: 500; padding: 1px 6px;
+  border-radius: 4px; background: var(--bg); border: 1px solid var(--border); color: var(--muted);
 }
-.post-stat { font-size: 11px; color: var(--muted); }
-.post-er { font-size: 11px; font-weight: 600; color: var(--accent); }
+.post-stat  { font-size: 11px; color: var(--muted); }
+.post-er    { font-size: 11px; font-weight: 600; color: var(--accent); }
 .post-views { font-size: 11px; color: var(--muted); }
-.post-link {
+.post-link  {
   display: inline-flex; align-items: center; gap: 3px;
   font-size: 10px; font-weight: 500; color: var(--accent);
   text-decoration: none; padding: 2px 7px;
@@ -218,705 +386,1030 @@ body {
   opacity: 0.8; transition: opacity 0.15s;
 }
 .post-link:hover { opacity: 1; }
-.post-thumb img {
-  width: 100%; height: 100%;
-  object-fit: cover; border-radius: 5px; display: block;
-}
-.post-caption a {
-  color: inherit; text-decoration: none;
-}
-.post-caption a:hover { text-decoration: underline; }
 
-/* ── FREQ CHART ── */
-.freq-item { display: grid; grid-template-columns: 60px 1fr 36px; gap: 8px; align-items: center; margin-bottom: 8px; }
-.freq-label { font-size: 11px; color: var(--muted); text-align: right; }
-.freq-track { height: 20px; background: var(--bg); border-radius: 4px; overflow: hidden; }
-.freq-fill {
-  height: 100%;
-  border-radius: 4px;
-  background: var(--accent);
-  opacity: 0.7;
-  display: flex; align-items: center;
-  padding-left: 6px;
-  font-size: 9px;
-  font-weight: 600;
-  color: white;
-  width: 0;
-  transition: width 0.8s cubic-bezier(0.16,1,0.3,1);
+/* ── DELTA ── */
+.delta {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 20px;
 }
-.freq-val { font-size: 11px; font-weight: 600; color: var(--ink); text-align: right; }
+.delta.up   { background: var(--green-lt);  color: var(--green); }
+.delta.down { background: var(--red-lt);    color: var(--red); }
+.delta.flat { background: var(--orange-lt); color: var(--orange); }
 
-/* ── CONTENT TYPE PILLS ── */
-.type-row { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
-.type-pill {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 4px 10px;
-  font-size: 12px;
-}
-.type-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-
-/* ── REKO ── */
-.reko-card {
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--accent);
-  border-radius: var(--r);
-  padding: 14px;
-  margin-bottom: 8px;
-}
-.reko-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
-.reko-icon-box {
-  width: 32px; height: 32px;
-  background: var(--accent-lt);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px;
-  flex-shrink: 0;
-}
-.reko-title { font-size: 13px; font-weight: 600; line-height: 1.3; margin-bottom: 2px; }
-.reko-subtitle { font-size: 11px; color: var(--muted); }
-.reko-problem {
-  background: #fff7ed;
-  border: 1px solid #fed7aa;
-  border-radius: var(--r-sm);
-  padding: 8px 10px;
-  margin-bottom: 10px;
-  font-size: 11px;
-  line-height: 1.6;
-  color: #7c2d12;
-}
-.reko-actions { display: flex; flex-direction: column; gap: 6px; }
-.reko-action {
-  display: flex;
-  gap: 8px;
-  background: var(--bg);
-  border-radius: var(--r-sm);
-  padding: 8px 10px;
-}
-.reko-action-icon { font-size: 13px; flex-shrink: 0; }
-.reko-action-title { font-size: 12px; font-weight: 500; margin-bottom: 1px; }
-.reko-action-desc { font-size: 11px; color: var(--muted); line-height: 1.5; }
-.impact-bar-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
-.impact-label { font-size: 10px; font-weight: 500; color: var(--dim); text-transform: uppercase; letter-spacing: 0.05em; }
-.impact-dots { display: flex; gap: 3px; }
-.impact-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border2); }
-.impact-dot.on { background: var(--accent); }
-.impact-time { font-size: 10px; color: var(--dim); margin-left: auto; }
-
-/* ── VIEWS ── */
-.view { display: none; }
-.view.active { display: block; }
-
-/* ── DIVIDER ── */
-.divider { height: 1px; background: var(--border); margin: 16px 0; }
-
-/* ── DATE RANGE PICKER ── */
-.date-range-bar {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
-  background: var(--white);
-  border-bottom: 1px solid var(--border);
-  flex-wrap: wrap;
-}
-.date-range-label { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; flex-shrink: 0; }
-.date-input {
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 5px 8px;
-  font-size: 11px;
-  font-family: inherit;
-  color: var(--ink);
-  background: var(--bg);
-  flex: 1;
-  min-width: 110px;
-}
-.date-input:focus { outline: none; border-color: var(--accent); }
-.date-sep { font-size: 11px; color: var(--dim); }
-.date-apply-btn {
-  background: var(--accent);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 5px 12px;
-  font-size: 11px;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: opacity 0.15s;
-}
-.date-apply-btn:hover { opacity: 0.85; }
-.date-preset-row {
-  display: flex;
-  gap: 4px;
-  padding: 6px 16px 10px;
-  background: var(--white);
-  border-bottom: 1px solid var(--border);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.date-preset-row::-webkit-scrollbar { display: none; }
-.preset-btn {
-  flex-shrink: 0;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 3px 10px;
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--muted);
-  cursor: pointer;
-  font-family: inherit;
-  transition: all 0.15s;
-}
-.preset-btn.active, .preset-btn:hover {
-  background: var(--accent-lt);
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-/* ── INSIGHT CARDS (What's Working / Not Working) ── */
-.insight-section { padding: 16px 16px 0; }
-.insight-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
-}
+/* ── INSIGHTS ── */
+.insight-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
 .insight-icon {
-  width: 28px; height: 28px;
-  border-radius: 7px;
+  width: 28px; height: 28px; border-radius: 7px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
-  flex-shrink: 0;
+  font-size: 14px; flex-shrink: 0;
 }
-.insight-title { font-size: 13px; font-weight: 700; }
+.insight-title    { font-size: 13px; font-weight: 700; }
 .insight-subtitle { font-size: 11px; color: var(--muted); }
 .insight-card {
-  border-radius: var(--r);
-  padding: 12px;
-  margin-bottom: 8px;
+  border-radius: var(--r); padding: 12px; margin-bottom: 8px;
   border-left: 3px solid transparent;
 }
-.insight-card.working {
-  background: #f0fdf4;
-  border-left-color: var(--green);
-}
-.insight-card.notworking {
-  background: #fff7ed;
-  border-left-color: var(--orange);
-}
-.insight-card-title {
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
+.insight-card.working    { background: #f0fdf4; border-left-color: var(--green); }
+.insight-card.notworking { background: #fff7ed; border-left-color: var(--orange); }
+.insight-card-title { font-size: 12px; font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
 .insight-card-body { font-size: 11px; line-height: 1.65; color: var(--muted); }
 .insight-card-body strong { color: var(--ink); font-weight: 600; }
 
-/* ── AVG VIEWS KPI ── */
-.kpi-views { grid-column: span 2; }
+/* ── REKO ── */
+.reko-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-left: 3px solid var(--accent); border-radius: var(--r);
+  padding: 14px; margin-bottom: 8px;
+}
+.reko-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+.reko-icon-box {
+  width: 32px; height: 32px; background: var(--accent-lt);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0;
+}
+.reko-title    { font-size: 13px; font-weight: 600; line-height: 1.3; margin-bottom: 2px; }
+.reko-subtitle { font-size: 11px; color: var(--muted); }
+.reko-problem  {
+  background: #fff7ed; border: 1px solid #fed7aa;
+  border-radius: var(--r-sm); padding: 8px 10px; margin-bottom: 10px;
+  font-size: 11px; line-height: 1.6; color: #7c2d12;
+}
+.reko-actions { display: flex; flex-direction: column; gap: 6px; }
+.reko-action {
+  display: flex; gap: 8px; background: var(--bg);
+  border-radius: var(--r-sm); padding: 8px 10px;
+}
+.reko-action-icon  { font-size: 13px; flex-shrink: 0; }
+.reko-action-title { font-size: 12px; font-weight: 500; margin-bottom: 1px; }
+.reko-action-desc  { font-size: 11px; color: var(--muted); line-height: 1.5; }
+.impact-bar-row {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border);
+}
+.impact-label  { font-size: 10px; font-weight: 500; color: var(--dim); text-transform: uppercase; letter-spacing: 0.05em; }
+.impact-dots   { display: flex; gap: 3px; }
+.impact-dot    { width: 7px; height: 7px; border-radius: 50%; background: var(--border2); }
+.impact-dot.on { background: var(--accent); }
+.impact-time   { font-size: 10px; color: var(--dim); margin-left: auto; }
 
-/* ── TOP 3 OVERVIEW CARDS ── */
-.top3-grid { display: flex; flex-direction: column; gap: 8px; }
-.top3-card {
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 12px;
-  position: relative;
-  overflow: hidden;
+/* ── GLOSSARY (Indeks) ── */
+.gloss-section-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--dim);
+  padding: 14px 16px 6px;
 }
-.top3-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: var(--accent);
-  border-radius: var(--r) var(--r) 0 0;
+.gloss-item {
+  background: var(--white); border-bottom: 1px solid var(--border); padding: 12px 16px;
 }
-.top3-rank-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-.top3-rank {
-  font-size: 10px; font-weight: 700;
-  background: var(--accent-lt); color: var(--accent);
-  padding: 2px 8px; border-radius: 20px;
-  font-family: 'Inter', sans-serif;
+.gloss-item:last-child { border-bottom: none; }
+.gloss-term { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.gloss-abbr { font-size: 13px; font-weight: 700; color: var(--accent); min-width: 52px; flex-shrink: 0; }
+.gloss-name { font-size: 12px; font-weight: 600; color: var(--ink); }
+.gloss-def  { font-size: 11px; color: var(--muted); line-height: 1.6; }
+.gloss-def strong { color: var(--ink); font-weight: 600; }
+.bench-row  { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.bench-pill {
+  display: flex; align-items: center; gap: 4px;
+  border-radius: 20px; padding: 3px 9px; font-size: 10px; font-weight: 600;
 }
-.top3-type {
-  font-size: 10px; color: var(--muted);
-  background: var(--bg); border: 1px solid var(--border);
-  padding: 2px 7px; border-radius: 4px;
-}
-.top3-date { font-size: 10px; color: var(--dim); margin-left: auto; }
-.top3-caption {
-  font-size: 12px; font-weight: 500; line-height: 1.5;
-  color: var(--ink); margin-bottom: 8px;
-  display: -webkit-box; -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical; overflow: hidden;
-}
-.top3-stats {
-  display: flex; gap: 8px; flex-wrap: wrap;
-  margin-bottom: 8px;
-}
-.top3-stat {
-  display: flex; align-items: center; gap: 3px;
-  font-size: 11px; color: var(--muted);
-}
-.top3-stat strong { color: var(--ink); font-weight: 600; }
-.top3-er {
-  font-size: 11px; font-weight: 700; color: var(--accent);
-  background: var(--accent-lt); padding: 2px 7px; border-radius: 4px;
-}
-.top3-analysis {
-  font-size: 11px; line-height: 1.6; color: var(--muted);
-  background: var(--bg); border-radius: var(--r-sm);
-  padding: 8px 10px; margin-bottom: 8px;
-  border-left: 2px solid var(--accent);
-}
-.top3-analysis strong { color: var(--ink); }
-.top3-link {
-  display: inline-flex; align-items: center; gap: 4px;
-  font-size: 10px; font-weight: 600; color: var(--accent);
-  text-decoration: none; padding: 4px 10px;
-  border: 1px solid var(--accent); border-radius: 6px;
-  transition: all 0.15s;
-}
-.top3-link:hover { background: var(--accent); color: white; }
+.bench-pill.low   { background: var(--red-lt);    color: var(--red); }
+.bench-pill.mid   { background: var(--orange-lt); color: var(--orange); }
+.bench-pill.good  { background: var(--green-lt);  color: var(--green); }
+.bench-pill.great { background: var(--accent-lt); color: var(--accent); }
+.bench-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
-/* ── INSIGHT/TIPS TIMESTAMP ── */
-.data-timestamp {
-  display: flex; align-items: center; gap: 6px;
-  margin-bottom: 14px; padding: 8px 10px;
-  background: var(--bg); border-radius: var(--r-sm);
-  border: 1px solid var(--border);
-  font-size: 10px; color: var(--muted);
+/* ── MISC ── */
+.view        { display: none; }
+.view.active { display: block; }
+.empty { text-align: center; padding: 32px 16px; color: var(--dim); font-size: 12px; line-height: 1.7; }
+.toast {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--ink); color: white; font-size: 12px;
+  padding: 9px 16px; border-radius: 20px; z-index: 999;
+  transition: transform 0.3s ease; white-space: nowrap;
 }
-.data-timestamp strong { color: var(--ink); }
-
-/* animation */
-@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
-.fade { animation: fadeIn 0.3s ease both; }
+.toast.show { transform: translateX(-50%) translateY(0); }
+.skel {
+  background: linear-gradient(90deg, var(--border) 25%, var(--bg) 50%, var(--border) 75%);
+  background-size: 200% 100%; animation: skel 1.4s infinite; border-radius: 4px;
+}
+@keyframes skel { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+.fade { animation: fadeIn 0.25s ease both; }
 </style>
 </head>
 <body>
 <div class="page">
 
-<!-- HEADER -->
 <div class="header">
   <div class="header-top">
     <div class="header-handle"><span>@</span>ummadentalcare</div>
-    <span class="scrape-badge" id="scrapeBadge">Belum ada data</span>
+    <span class="scrape-badge loading" id="scrapeBadge">Memuat…</span>
   </div>
   <div class="tab-row">
-    <button class="tab-btn active" onclick="switchView('overview', this)">Overview</button>
-    <button class="tab-btn" onclick="switchView('growth', this)">Growth</button>
-    <button class="tab-btn" onclick="switchView('posts', this)">Posts</button>
-    <button class="tab-btn" onclick="switchView('insights', this)">Insights</button>
-    <button class="tab-btn" onclick="switchView('reko', this)">Tips</button>
+    <button class="tab-btn active" onclick="switchView('overview',this)">Overview</button>
+    <button class="tab-btn" onclick="switchView('growth',this)">Growth</button>
+    <button class="tab-btn" onclick="switchView('posts',this)">Posts</button>
+    <button class="tab-btn" onclick="switchView('insights',this)">Insights</button>
+    <button class="tab-btn" onclick="switchView('index',this)">Indeks</button>
   </div>
 </div>
 
-<!-- DATE RANGE BAR -->
-<div class="date-range-bar">
+<div class="date-range-bar" id="dateRangeBar">
   <span class="date-range-label">Periode</span>
   <input type="date" id="dateFrom" class="date-input">
   <span class="date-sep">→</span>
   <input type="date" id="dateTo" class="date-input">
   <button class="date-apply-btn" onclick="applyDateRange()">Terapkan</button>
 </div>
-<div class="date-preset-row">
-  <button class="preset-btn active" onclick="setPreset('all', this)">Semua</button>
-  <button class="preset-btn" onclick="setPreset('7d', this)">7 Hari</button>
-  <button class="preset-btn" onclick="setPreset('30d', this)">30 Hari</button>
-  <button class="preset-btn" onclick="setPreset('thisMonth', this)">Bulan ini</button>
-  <button class="preset-btn" onclick="setPreset('lastMonth', this)">Bulan lalu</button>
+<div class="date-preset-row" id="datePresetRow">
+  <button class="preset-btn active" onclick="setPreset('all',this)">Semua</button>
+  <button class="preset-btn" onclick="setPreset('7d',this)">7 Hari</button>
+  <button class="preset-btn" onclick="setPreset('30d',this)">30 Hari</button>
+  <button class="preset-btn" onclick="setPreset('thisMonth',this)">Bulan ini</button>
+  <button class="preset-btn" onclick="setPreset('lastMonth',this)">Bulan lalu</button>
 </div>
 
-<!-- ══════════════════════════════════
-     VIEW: OVERVIEW
-══════════════════════════════════ -->
+<!-- ═══════════ OVERVIEW ═══════════ -->
 <div id="view-overview" class="view active">
 
-  <!-- KPIs -->
-  <div class="kpi-grid" id="kpiGrid">
-    <div class="kpi-card">
-      <p class="kpi-label">Followers</p>
-      <p class="kpi-value" id="kpiFollowers">—</p>
-      <p class="kpi-sub" id="kpiFollowersSub">—</p>
-    </div>
-    <div class="kpi-card">
-      <p class="kpi-label">Avg ER</p>
-      <p class="kpi-value" style="color:var(--accent)" id="kpiER">—</p>
-      <p class="kpi-sub" id="kpiERsub">per post periode ini</p>
-    </div>
-    <div class="kpi-card">
-      <p class="kpi-label">Avg Likes</p>
-      <p class="kpi-value" id="kpiLikes">—</p>
-      <p class="kpi-sub" id="kpiLikesSub">per post</p>
-    </div>
-    <div class="kpi-card">
-      <p class="kpi-label">Avg Komentar</p>
-      <p class="kpi-value" id="kpiComments">—</p>
-      <p class="kpi-sub" id="kpiCommentsSub">—</p>
-    </div>
-    <div class="kpi-card kpi-views">
-      <p class="kpi-label">Avg Video Views</p>
-      <p class="kpi-value" id="kpiViews">—</p>
-      <p class="kpi-sub" id="kpiViewsSub">per post video di periode ini</p>
+  <div class="ov-health-card" id="ovHealthCard">
+    <div class="ov-health-emoji" id="ovHealthEmoji">⏳</div>
+    <div>
+      <p class="ov-health-title" id="ovHealthTitle">Memuat…</p>
+      <p class="ov-health-desc"  id="ovHealthDesc"></p>
     </div>
   </div>
 
-  <!-- ER chart -->
+  <div class="ov-kpi-grid">
+    <div class="ov-kpi">
+      <p class="ov-kpi-label">Followers</p>
+      <p class="ov-kpi-value" id="kpiFollowers"><span class="skel" style="width:48px;height:18px;display:inline-block"></span></p>
+      <p class="ov-kpi-sub"   id="kpiFollowersSub">—</p>
+    </div>
+    <div class="ov-kpi accent">
+      <p class="ov-kpi-label">Avg ER</p>
+      <p class="ov-kpi-value" id="kpiER">—</p>
+      <p class="ov-kpi-sub"   id="kpiERsub">—</p>
+    </div>
+    <div class="ov-kpi">
+      <p class="ov-kpi-label">Total post</p>
+      <p class="ov-kpi-value" id="kpiPostCount">—</p>
+      <p class="ov-kpi-sub"   id="kpiPostCountSub">historis</p>
+    </div>
+    <div class="ov-kpi">
+      <p class="ov-kpi-label">Avg likes</p>
+      <p class="ov-kpi-value" id="kpiLikes">—</p>
+      <p class="ov-kpi-sub"   id="kpiLikesSub">per post</p>
+    </div>
+    <div class="ov-kpi">
+      <p class="ov-kpi-label">Avg komen</p>
+      <p class="ov-kpi-value" id="kpiComments">—</p>
+      <p class="ov-kpi-sub"   id="kpiCommentsSub">per post</p>
+    </div>
+    <div class="ov-kpi">
+      <p class="ov-kpi-label">Avg views</p>
+      <p class="ov-kpi-value" id="kpiViews">—</p>
+      <p class="ov-kpi-sub"   id="kpiViewsSub">per video</p>
+    </div>
+  </div>
+
+  <div class="ov-signal-row" id="ovSignals"></div>
+
+  <div class="ov-best-type-card">
+    <div class="ov-best-type-left">
+      <span class="ov-best-type-icon" id="ovBestTypeIcon">—</span>
+      <div>
+        <p class="ov-best-type-label">Format konten terbaik</p>
+        <p class="ov-best-type-name" id="ovBestTypeName">Memuat…</p>
+      </div>
+    </div>
+    <div class="ov-best-type-er">
+      <p class="ov-best-type-er-val" id="ovBestTypeER">—</p>
+      <p class="ov-best-type-er-sub">avg ER</p>
+    </div>
+  </div>
+
+  <div class="ov-consistency">
+    <p class="ov-consistency-label">Konsistensi posting — 8 minggu terakhir</p>
+    <div class="ov-week-dots" id="ovWeekDots"></div>
+    <p class="ov-consistency-desc" id="ovConsistencyDesc">Memuat…</p>
+  </div>
+
+  <div class="section" style="margin-top:10px">
+    <div class="section-title">Top 3 post (periode ini)</div>
+    <div class="top3-grid" id="top3Container">
+      <div class="empty">Memuat data…</div>
+    </div>
+  </div>
+
   <div class="section" style="margin-top:12px">
-    <div class="section-title">Engagement rate — 12 post terakhir</div>
+    <div class="section-title">Tren engagement — 12 post terakhir</div>
     <div class="card" style="padding:12px">
-      <div class="chart-wrap" style="height:180px"><canvas id="erChart"></canvas></div>
+      <div class="chart-wrap" style="height:160px">
+        <canvas id="erChart" role="img" aria-label="Line chart ER 12 post terakhir @ummadentalcare"></canvas>
+      </div>
+      <p style="font-size:10px;color:var(--dim);margin-top:6px" id="erChartNote"></p>
     </div>
-  </div>
-
-  <!-- Content type -->
-  <div class="section">
-    <div class="section-title">Komposisi konten</div>
-    <div class="card">
-      <div class="type-row"></div>
-      <div class="chart-wrap" style="height:160px"><canvas id="typeChart"></canvas></div>
-    </div>
-  </div>
-
-  <!-- Top 3 performing -->
-  <div class="section">
-    <div class="section-title">Top 3 konten terbaik — periode ini</div>
-    <div id="top3Container" class="top3-grid"></div>
-  </div>
-
-  <!-- Posting freq -->
-  <div class="section">
-    <div class="section-title">Frekuensi posting per minggu</div>
-    <div class="card" id="freqContainer"></div>
   </div>
 
 </div>
 
-<!-- ══════════════════════════════════
-     VIEW: GROWTH
-══════════════════════════════════ -->
+<!-- ═══════════ GROWTH ═══════════ -->
 <div id="view-growth" class="view">
 
-  <!-- WoW / MoM growth cards -->
-  <div class="section" style="margin-top:12px">
-    <div class="section-title">Week-on-week engagement rate</div>
-    <div class="growth-row" id="wowCards"></div>
-  </div>
-
-  <div class="section" style="margin-top:12px">
-    <div class="section-title">Month-on-month engagement rate</div>
-    <div class="growth-row" id="momCards"></div>
-  </div>
-
-  <!-- Weekly ER chart -->
-  <div class="section" style="margin-top:12px">
-    <div class="section-title">Avg ER per minggu</div>
-    <div class="card" style="padding:12px">
-      <div class="chart-wrap" style="height:180px"><canvas id="weeklyChart"></canvas></div>
+  <div class="section" style="margin-top:14px">
+    <div class="g-status-card">
+      <div class="g-status-emoji" id="growthStatusEmoji">⏳</div>
+      <div>
+        <p class="g-status-title" id="growthStatusTitle">Memuat…</p>
+        <p class="g-status-desc"  id="growthStatusDesc"></p>
+      </div>
     </div>
   </div>
 
-  <!-- Monthly ER chart -->
   <div class="section">
-    <div class="section-title">Avg ER per bulan</div>
-    <div class="card" style="padding:12px">
-      <div class="chart-wrap" style="height:160px"><canvas id="monthlyChart"></canvas></div>
+    <div class="g-compare-card">
+      <p class="g-compare-label">Minggu ini vs minggu lalu</p>
+      <div id="wowCompare"><div class="empty" style="padding:8px">Memuat…</div></div>
     </div>
   </div>
 
-  <!-- Insight note -->
   <div class="section">
-    <div id="mom-insight" class="card" style="background:#fffbeb; border-color:#fde68a;">
-      <p style="font-size:12px; font-weight:600; color:#92400e; margin-bottom:4px">⚠️ Menunggu data</p>
-      <p style="font-size:11px; color:#92400e; line-height:1.6">Insight month-on-month akan muncul di sini setelah minimal 2 bulan data tersedia.</p>
+    <div class="g-compare-card">
+      <p class="g-compare-label">Bulan ini vs bulan lalu</p>
+      <div id="momCompare"><div class="empty" style="padding:8px">Memuat…</div></div>
     </div>
+  </div>
+
+  <div class="section">
+    <div class="g-bench-card">
+      <p class="g-bench-label">Posisi ER kamu vs rata-rata akun klinik/kesehatan gigi di IG</p>
+      <div class="g-bench-track">
+        <div class="g-bench-marker" id="benchMarker" style="left:0%"></div>
+      </div>
+      <div class="g-bench-ticks">
+        <span>0%</span><span>1.5%</span><span>3%</span><span>5%</span><span>8%+</span>
+      </div>
+      <div class="g-bench-verdict" id="benchVerdict">—</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="g-chart-toggle">
+      <button class="g-chart-btn active" onclick="switchGrowthChart('weekly',this)">Per Minggu</button>
+      <button class="g-chart-btn"        onclick="switchGrowthChart('monthly',this)">Per Bulan</button>
+    </div>
+    <div class="card" style="padding:12px">
+      <div class="chart-wrap" style="height:180px" id="weeklyWrap">
+        <canvas id="weeklyChart" role="img" aria-label="Bar chart ER per minggu"></canvas>
+      </div>
+      <div class="chart-wrap" style="height:180px;display:none" id="monthlyWrap">
+        <canvas id="monthlyChart" role="img" aria-label="Bar chart ER per bulan"></canvas>
+      </div>
+      <p id="growthChartNote" style="font-size:10px;color:var(--dim);margin-top:8px;line-height:1.5"></p>
+    </div>
+  </div>
+
+  <div class="section" style="padding-bottom:4px">
+    <div class="section-title">Yang perlu kamu tahu</div>
+    <div class="g-takeaway-list" id="growthTakeaways"></div>
   </div>
 
 </div>
 
-<!-- ══════════════════════════════════
-     VIEW: TOP POSTS
-══════════════════════════════════ -->
+<!-- ═══════════ POSTS ═══════════ -->
 <div id="view-posts" class="view">
-
-  <!-- Filter row -->
   <div class="section" style="margin-top:12px">
-    <div class="section-title">Filter periode</div>
-    <div class="tab-row" style="margin-bottom:12px">
-      <button class="tab-btn active" onclick="filterPosts('all', this)">Semua</button>
-      <button class="tab-btn" onclick="filterPosts('week', this)">Minggu ini</button>
-      <button class="tab-btn" onclick="filterPosts('month', this)">Bulan ini</button>
+    <div class="section-title">Semua post (periode ini), diurutkan berdasar engagement</div>
+    <div class="card" id="topPostsContainer">
+      <div class="empty">Memuat data…</div>
     </div>
-    <div class="card" id="topPostsContainer"></div>
   </div>
-
 </div>
 
-<!-- ══════════════════════════════════
-     VIEW: INSIGHTS
-══════════════════════════════════ -->
+<!-- ═══════════ INSIGHTS ═══════════ -->
 <div id="view-insights" class="view">
-  <div class="insight-section">
-    <div class="data-timestamp" id="insightTimestamp">
-      <span>🕐</span>
-      <span>Memuat insight...</span>
-    </div>
-    <div class="insight-header">
-      <div class="insight-icon" style="background:#dcfce7">✅</div>
-      <div>
-        <p class="insight-title" style="color:var(--green)">What's Working</p>
-        <p class="insight-subtitle" id="insightWorkingSubtitle">Pola konten yang terbukti perform di periode ini</p>
-      </div>
-    </div>
-    <div id="insightWorking"></div>
-    <div style="height:20px"></div>
-    <div class="insight-header">
-      <div class="insight-icon" style="background:#fff7ed">⚠️</div>
-      <div>
-        <p class="insight-title" style="color:var(--orange)">What's NOT Working</p>
-        <p class="insight-subtitle" id="insightNotWorkingSubtitle">Pola yang perlu dihindari atau diubah</p>
-      </div>
-    </div>
-    <div id="insightNotWorking"></div>
+
+  <div class="subtab-row">
+    <button class="subtab-btn active" onclick="switchInsPane('working',this)">✅ Working</button>
+    <button class="subtab-btn"        onclick="switchInsPane('notworking',this)">⚠️ Not Working</button>
+    <button class="subtab-btn"        onclick="switchInsPane('reko',this)">🎯 Rekomendasi</button>
+    <button class="subtab-btn"        onclick="switchInsPane('roadmap',this)">🗓️ Roadmap</button>
   </div>
-</div><!-- ══════════════════════════════════
-     VIEW: REKOMENDASI
-══════════════════════════════════ -->
-<div id="view-reko" class="view">
+
   <div class="section" style="margin-top:12px">
-    <div class="section-title">Action plan berdasarkan data aktual</div>
-    <div class="data-timestamp" id="tipsTimestamp">
-      <span>🕐</span>
-      <span>Memuat tips...</span>
+
+    <div id="ins-pane-working" class="subpane active">
+      <div class="insight-header">
+        <div class="insight-icon" style="background:#dcfce7">✅</div>
+        <div>
+          <p class="insight-title" style="color:var(--green)">What's Working</p>
+          <p class="insight-subtitle" id="insightWorkingSubtitle">Pola konten yang terbukti perform di periode ini</p>
+        </div>
+      </div>
+      <div id="insightWorking"><div class="empty">Memuat…</div></div>
     </div>
-    <div id="rekoContainer"></div>
-    <div class="section-title" style="margin-top:16px">Roadmap 4 minggu</div>
-    <div id="roadmapContainer"></div>
+
+    <div id="ins-pane-notworking" class="subpane">
+      <div class="insight-header">
+        <div class="insight-icon" style="background:#fff7ed">⚠️</div>
+        <div>
+          <p class="insight-title" style="color:var(--orange)">What's NOT Working</p>
+          <p class="insight-subtitle" id="insightNotWorkingSubtitle">Pola yang perlu dihindari atau diubah</p>
+        </div>
+      </div>
+      <div id="insightNotWorking"><div class="empty">Memuat…</div></div>
+    </div>
+
+    <div id="ins-pane-reko" class="subpane">
+      <div class="insight-header">
+        <div class="insight-icon" style="background:var(--accent-lt)">🎯</div>
+        <div>
+          <p class="insight-title" style="color:var(--accent)">Rekomendasi Aksi</p>
+          <p class="insight-subtitle">Berdasarkan data scrape aktual @ummadentalcare</p>
+        </div>
+      </div>
+      <div id="rekoContainer"><div class="empty">Memuat…</div></div>
+    </div>
+
+    <div id="ins-pane-roadmap" class="subpane">
+      <div class="section-title" style="padding:0 0 10px">Roadmap 4 minggu</div>
+      <div class="card" style="padding:0;overflow:hidden;margin-bottom:0">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+          <thead>
+            <tr style="background:var(--bg)">
+              <th style="padding:8px 12px;text-align:left;font-size:10px;color:var(--muted);border-bottom:1px solid var(--border);font-weight:600;text-transform:uppercase;letter-spacing:.05em">Waktu</th>
+              <th style="padding:8px 12px;text-align:left;font-size:10px;color:var(--muted);border-bottom:1px solid var(--border);font-weight:600;text-transform:uppercase;letter-spacing:.05em">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="roadmapBody"></tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 </div>
 
-</div><!-- end page -->
+<!-- ═══════════ INDEKS ═══════════ -->
+<div id="view-index" class="view">
+
+  <div class="subtab-row">
+    <button class="subtab-btn active" onclick="switchIdxPane('metrik',this)">Metrik</button>
+    <button class="subtab-btn"        onclick="switchIdxPane('format',this)">Format</button>
+    <button class="subtab-btn"        onclick="switchIdxPane('istilah',this)">Istilah</button>
+    <button class="subtab-btn"        onclick="switchIdxPane('benchmark',this)">Benchmark</button>
+  </div>
+
+  <div id="idx-pane-metrik" class="subpane active" style="padding-top:8px">
+    <div class="gloss-item">
+      <div class="gloss-term"><span class="gloss-abbr">ER</span><span class="gloss-name">Engagement Rate</span></div>
+      <p class="gloss-def">
+        Persentase interaksi (likes + komentar) dibagi jumlah followers. Mengukur seberapa "hidup" konten di mata audiens — bukan hanya seberapa banyak yang melihat, tapi berapa yang bereaksi.<br><br>
+        <strong>Formula:</strong> (Likes + Komentar) ÷ Followers × 100
+      </p>
+      <div class="bench-row">
+        <span class="bench-pill low"><span class="bench-dot"></span>&lt; 1% — Rendah</span>
+        <span class="bench-pill mid"><span class="bench-dot"></span>1–3% — Rata-rata</span>
+        <span class="bench-pill good"><span class="bench-dot"></span>3–6% — Bagus</span>
+        <span class="bench-pill great"><span class="bench-dot"></span>&gt; 6% — Viral</span>
+      </div>
+      <p class="gloss-def" id="idxErContext" style="margin-top:8px">Memuat konteks akun…</p>
+    </div>
+
+    <div class="gloss-item">
+      <div class="gloss-term"><span class="gloss-abbr">Avg ER</span><span class="gloss-name">Average Engagement Rate</span></div>
+      <p class="gloss-def">Rata-rata ER dari semua post dalam periode yang dipilih. Lebih representatif dari ER satu post karena meratakan outlier (post viral atau post yang sangat sepi).</p>
+    </div>
+
+    <div class="gloss-item">
+      <div class="gloss-term"><span class="gloss-abbr">WoW</span><span class="gloss-name">Week-on-Week</span></div>
+      <p class="gloss-def">
+        Perbandingan performa minggu ini vs minggu sebelumnya. Ditampilkan sebagai delta persentase (▲ naik / ▼ turun).<br><br>
+        <strong>Contoh:</strong> ▲ 12% WoW artinya avg ER minggu ini 12% lebih tinggi dari minggu lalu.
+      </p>
+    </div>
+
+    <div class="gloss-item">
+      <div class="gloss-term"><span class="gloss-abbr">MoM</span><span class="gloss-name">Month-on-Month</span></div>
+      <p class="gloss-def">Perbandingan performa bulan ini vs bulan sebelumnya. Berguna untuk melihat tren jangka menengah yang tidak terpengaruh fluktuasi mingguan.</p>
+    </div>
+  </div>
+
+  <div id="idx-pane-format" class="subpane" style="padding-top:8px">
+    <div class="gloss-item">
+      <div class="gloss-term"><span class="gloss-abbr" style="color:#5046e4">🗂️</span><span class="gloss-name">Carousel / Sidecar</span></div>
+      <p class="gloss-def">
+        Post dengan lebih dari 1 foto/video yang bisa di-swipe. Di data scraper Apify disebut <strong>"Sidecar"</strong>. Cocok untuk edukasi bertahap (mis. "5 tanda kamu perlu scaling gigi") — cenderung punya <strong>save rate tinggi</strong>, sinyal positif ke algoritma Instagram.
+      </p>
+    </div>
+
+    <div class="gloss-item">
+      <div class="gloss-term"><span class="gloss-abbr" style="color:#0ea5e9">🎬</span><span class="gloss-name">Video / Reels</span></div>
+      <p class="gloss-def">
+        Konten video termasuk Reels. Algoritma Instagram memprioritaskan Reels untuk distribusi ke non-followers, tapi ER-nya cenderung lebih rendah karena banyak viewer menonton tanpa like atau komentar.
+      </p>
+    </div>
+
+    <div class="gloss-item">
+      <div class="gloss-term"><span class="gloss-abbr" style="color:#f59e0b">🖼️</span><span class="gloss-name">Image</span></div>
+      <p class="gloss-def">Post foto tunggal. Jangkauan lebih terbatas dari Reels, tapi bisa dapat ER tinggi jika kontennya relevan — misalnya before/after treatment atau momen di klinik yang terasa personal.</p>
+    </div>
+
+    <div class="gloss-item">
+      <div class="gloss-term"><span class="gloss-abbr">Best</span><span class="gloss-name">Format konten terbaik (di tab Overview)</span></div>
+      <p class="gloss-def">Format (Carousel/Video/Image) dengan avg ER tertinggi dari data periode yang sedang dipilih. Dihitung ulang otomatis setiap kali filter tanggal berubah.</p>
+    </div>
+  </div>
+
+  <div id="idx-pane-istilah" class="subpane" style="padding-top:8px">
+    <div class="gloss-item">
+      <div class="gloss-term"><span class="gloss-abbr">Top 3</span><span class="gloss-name">Top 3 Post</span></div>
+      <p class="gloss-def">Tiga post dengan total engagement (likes + komentar) tertinggi dalam periode yang dipilih, lengkap dengan label singkat kenapa post itu perform (misal "Caption panjang + pertanyaan", "Topik emosional").</p>
+    </div>
+
+    <div class="gloss-item">
+      <div class="gloss-term"><span class="gloss-abbr">Views</span><span class="gloss-name">Video Views</span></div>
+      <p class="gloss-def">Jumlah penayangan video. <strong>Penting:</strong> Views ≠ engagement — seseorang bisa menonton tanpa like atau komentar. ER tetap lebih penting untuk mengukur koneksi dengan audiens.</p>
+    </div>
+
+    <div class="gloss-item">
+      <div class="gloss-term"><span class="gloss-abbr">Konsis-<br>tensi</span><span class="gloss-name">Konsistensi Posting</span></div>
+      <p class="gloss-def">Berapa dari 8 minggu terakhir akun ini aktif posting minimal 1×. Konsistensi tinggi membantu algoritma Instagram terus mendistribusikan konten ke audiens baru.</p>
+    </div>
+
+    <div class="gloss-item">
+      <div class="gloss-term"><span class="gloss-abbr">Scrape</span><span class="gloss-name">Data Scrape</span></div>
+      <p class="gloss-def">Proses pengambilan data Instagram otomatis via <strong>Apify</strong>. Dijalankan terjadwal (lihat workflow GitHub Actions) dan hasilnya disimpan di <code>ummadentalcare.json</code>. Data baru di-merge dengan history lama sehingga tren historis tetap tersimpan.</p>
+    </div>
+  </div>
+
+  <div id="idx-pane-benchmark" class="subpane" style="padding-top:8px">
+    <div class="gloss-item">
+      <div class="gloss-term"><span class="gloss-abbr">Klinik</span><span class="gloss-name">Akun Layanan Kesehatan / Klinik (5K–50K followers)</span></div>
+      <p class="gloss-def">Kategori umum untuk akun klinik/dokter gigi di Instagram Indonesia — audiens datang untuk edukasi dan kepercayaan, bukan hiburan viral, jadi ER wajar lebih moderat dibanding akun hiburan.</p>
+      <div class="bench-row">
+        <span class="bench-pill low"><span class="bench-dot"></span>&lt; 1% — Di bawah rata-rata</span>
+        <span class="bench-pill mid"><span class="bench-dot"></span>1–3% — Rata-rata</span>
+        <span class="bench-pill good"><span class="bench-dot"></span>3–5% — Bagus</span>
+        <span class="bench-pill great"><span class="bench-dot"></span>&gt; 5% — Luar biasa</span>
+      </div>
+    </div>
+
+    <div class="gloss-item" style="background:var(--accent-lt);border-left:3px solid var(--accent);border-radius:var(--r-sm);padding:12px 16px;margin:0 16px 16px;">
+      <p class="gloss-def" style="color:var(--accent)" id="idxBenchmarkNote">Memuat catatan performa terbaru…</p>
+    </div>
+  </div>
+
+</div>
+
+</div>
+<div class="toast" id="toast"></div>
 
 <script>
-/* ════════════════════════════════════════════════════════════
-   Dashboard @ummadentalcare — data source: ./data/ummadentalcare.json
-   NOTE: fetch path is RELATIVE so this works both at the domain
-   root and on a GitHub Pages project site (username.github.io/repo/).
-════════════════════════════════════════════════════════════ */
+/* ════════════════════════════════════════
+   @ummadentalcare Analytics Dashboard
+   Data: data/ummadentalcare.json (relative path — works on GitHub Pages
+   root or project sites; auto-updated by scripts/scrape.py via GitHub Actions)
+════════════════════════════════════════ */
 
-const DATA_URL = 'data/ummadentalcare.json';
-
-const ACCENT = '#5046e4';
-const TOOLTIP_OPTS = {
-  backgroundColor:'#fff', borderColor:'#e8e6e1', borderWidth:1,
-  titleColor:'#1a1a1a', bodyColor:'#6b6b6b', padding:8,
-};
+const DATA_URL   = 'data/ummadentalcare.json';
+const ACCENT     = '#5046e4';
+const TYPE_COLOR = { Sidecar:'#5046e4', Video:'#0ea5e9', Image:'#f59e0b' };
+const TYPE_ICON  = { Sidecar:'🗂️', Video:'🎬', Image:'🖼️' };
+const RANK_CLS   = ['gold', 'silver', 'bronze'];
+const RANK_LABEL = ['🥇', '🥈', '🥉'];
 
 Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
 Chart.defaults.font.size   = 10;
 Chart.defaults.color       = '#6b6b6b';
 Chart.defaults.borderColor = '#e8e6e1';
 
-/* ── helpers ── */
-function eng(p)    { return p.likesCount + p.commentsCount; }
-function erPct(p, f) { return (eng(p) / f) * 100; }
-function erFmt(v)  { return v.toFixed(3) + '%'; }
+const TOOLTIP = {
+  backgroundColor:'#fff', borderColor:'#e8e6e1', borderWidth:1,
+  titleColor:'#1a1a1a', bodyColor:'#6b6b6b', padding:8,
+};
 
-function isoWeek(dateStr) {
-  const d = new Date(dateStr);
-  const jan4 = new Date(d.getFullYear(), 0, 4);
-  const start = new Date(jan4);
-  start.setDate(jan4.getDate() - ((jan4.getDay() + 6) % 7));
-  const w = Math.ceil(((d - start) / 86400000 + 1) / 7);
+let _allPosts  = [];
+let _followers = 0;
+let _dateFrom  = null;
+let _dateTo    = null;
+let _charts    = {};
+
+const $     = id => document.getElementById(id);
+const setEl = (id,val) => { const el=$(id); if(el) el.innerHTML=val; };
+const erPct = (p,f) => (p.likesCount+p.commentsCount)/f*100;
+const erFmt = v => v.toFixed(3)+'%';
+
+function isoWeek(ts) {
+  const d=new Date(ts), jan4=new Date(d.getFullYear(),0,4);
+  const start=new Date(jan4); start.setDate(jan4.getDate()-((jan4.getDay()+6)%7));
+  const w=Math.ceil(((d-start)/86400000+1)/7);
   return `${d.getFullYear()}-W${String(w).padStart(2,'0')}`;
 }
-function isoMonth(dateStr) { return dateStr.slice(0,7); }
-
-function groupBy(posts, keyFn) {
-  return posts.reduce((acc, p) => {
-    const k = keyFn(p.timestamp);
-    (acc[k] = acc[k] || []).push(p);
-    return acc;
-  }, {});
+function isoMonth(ts) { return ts.slice(0,7); }
+function groupBy(arr,fn) {
+  return arr.reduce((acc,p)=>{ const k=fn(p.timestamp); (acc[k]=acc[k]||[]).push(p); return acc; },{});
 }
-function avgER(posts, followers) {
-  if (!posts.length) return 0;
-  return posts.reduce((s,p) => s + erPct(p,followers), 0) / posts.length;
+function avgER(arr,f) {
+  if (!arr.length) return 0;
+  return arr.reduce((s,p)=>s+erPct(p,f),0)/arr.length;
 }
-
-function showLoading() {
-  document.querySelectorAll('.kpi-value').forEach(el => { el.textContent = '—'; });
+function toast(msg,ms=2500) {
+  const el=$("toast"); el.textContent=msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),ms);
 }
+function destroyChart(id) { if(_charts[id]){_charts[id].destroy();delete _charts[id];} }
 
-/* ════════════════════════════════════
-   DATE RANGE STATE
-════════════════════════════════════ */
-window._dateFrom = null;
-window._dateTo   = null;
-
-function getFilteredPosts() {
-  const all  = window._appAllPosts || [];
-  const from = window._dateFrom;
-  const to   = window._dateTo;
-  if (!from && !to) return all;
-  return all.filter(p => {
-    if (from && p.timestamp < from) return false;
-    if (to   && p.timestamp > to)   return false;
+/* ── Date filter ── */
+function getFiltered() {
+  if (!_dateFrom&&!_dateTo) return _allPosts;
+  return _allPosts.filter(p=>{
+    if (_dateFrom&&p.timestamp<_dateFrom) return false;
+    if (_dateTo&&p.timestamp>_dateTo)     return false;
     return true;
   });
 }
-
 function applyDateRange() {
-  const from = document.getElementById('dateFrom').value;
-  const to   = document.getElementById('dateTo').value;
-  if (!from || !to) return;
-  window._dateFrom = from;
-  window._dateTo   = to;
-  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  _dateFrom=$("dateFrom").value||null;
+  _dateTo=$("dateTo").value||null;
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
   renderAll();
 }
-
-function setPreset(preset, btn) {
-  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  const now   = new Date();
-  const today = now.toISOString().slice(0,10);
-  const nDaysAgo = n => { const d = new Date(now); d.setDate(d.getDate()-n); return d.toISOString().slice(0,10); };
-
-  if (preset === 'all') {
-    window._dateFrom = null; window._dateTo = null;
-    const all = window._appAllPosts || [];
-    if (all.length) {
-      const s = [...all].sort((a,b) => a.timestamp.localeCompare(b.timestamp));
-      document.getElementById('dateFrom').value = s[0].timestamp;
-      document.getElementById('dateTo').value   = s[s.length-1].timestamp;
+function setPreset(preset,btn) {
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  const now=new Date(),today=now.toISOString().slice(0,10);
+  const ago=n=>{const d=new Date(now);d.setDate(d.getDate()-n);return d.toISOString().slice(0,10);};
+  if (preset==='all') {
+    _dateFrom=_dateTo=null;
+    if (_allPosts.length) {
+      const s=[..._allPosts].sort((a,b)=>a.timestamp.localeCompare(b.timestamp));
+      $("dateFrom").value=s[0].timestamp; $("dateTo").value=s[s.length-1].timestamp;
     }
-  } else if (preset === '7d') {
-    window._dateFrom = nDaysAgo(7); window._dateTo = today;
-    document.getElementById('dateFrom').value = window._dateFrom;
-    document.getElementById('dateTo').value   = window._dateTo;
-  } else if (preset === '30d') {
-    window._dateFrom = nDaysAgo(30); window._dateTo = today;
-    document.getElementById('dateFrom').value = window._dateFrom;
-    document.getElementById('dateTo').value   = window._dateTo;
-  } else if (preset === 'thisMonth') {
-    window._dateFrom = today.slice(0,7)+'-01'; window._dateTo = today;
-    document.getElementById('dateFrom').value = window._dateFrom;
-    document.getElementById('dateTo').value   = window._dateTo;
-  } else if (preset === 'lastMonth') {
-    const d = new Date(now.getFullYear(), now.getMonth()-1, 1);
-    const last = new Date(now.getFullYear(), now.getMonth(), 0);
-    window._dateFrom = d.toISOString().slice(0,10);
-    window._dateTo   = last.toISOString().slice(0,10);
-    document.getElementById('dateFrom').value = window._dateFrom;
-    document.getElementById('dateTo').value   = window._dateTo;
+  } else if (preset==='7d')       { _dateFrom=ago(7);  _dateTo=today; }
+  else if (preset==='30d')        { _dateFrom=ago(30); _dateTo=today; }
+  else if (preset==='thisMonth')  { _dateFrom=today.slice(0,7)+'-01'; _dateTo=today; }
+  else if (preset==='lastMonth')  {
+    const d=new Date(now.getFullYear(),now.getMonth()-1,1);
+    const e=new Date(now.getFullYear(),now.getMonth(),0);
+    _dateFrom=d.toISOString().slice(0,10); _dateTo=e.toISOString().slice(0,10);
   }
+  if (preset!=='all') { $("dateFrom").value=_dateFrom; $("dateTo").value=_dateTo; }
   renderAll();
 }
 
-/* ════════════════════════════════════
-   RENDER ALL
-════════════════════════════════════ */
-function renderAll() {
-  const filtered  = getFilteredPosts();
-  const FOLLOWERS = window._appFollowers || 1;
+/* ══════════════════════════
+   FETCH & INIT
+══════════════════════════ */
+async function init() {
+  const badge=$("scrapeBadge");
+  try {
+    const res=await fetch(DATA_URL,{cache:'no-store'});
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json=await res.json();
+    const {profile,posts,updatedAt}=json;
 
-  const avgLikes    = filtered.length ? filtered.reduce((s,p) => s+p.likesCount,0)/filtered.length : 0;
-  const avgComments = filtered.length ? filtered.reduce((s,p) => s+p.commentsCount,0)/filtered.length : 0;
-  const avgERval    = filtered.length ? filtered.reduce((s,p) => s+erPct(p,FOLLOWERS),0)/filtered.length : 0;
-  const videoPosts  = filtered.filter(p => p.videoViewCount);
-  const avgViews    = videoPosts.length ? videoPosts.reduce((s,p) => s+(p.videoViewCount||0),0)/videoPosts.length : 0;
+    _followers=profile.followersCount||1;
+    _allPosts=(posts||[]).filter(p=>p.id!=='placeholder'&&p.timestamp);
 
-  const setEl = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
-  setEl('kpiFollowers', (FOLLOWERS).toLocaleString('id'));
-  setEl('kpiFollowersSub', `${(window._appAllPosts||[]).length} post historis`);
-  setEl('kpiER', erFmt(avgERval));
-  setEl('kpiERsub', `${filtered.length} post di periode ini`);
-  setEl('kpiLikes', Math.round(avgLikes).toLocaleString('id'));
-  setEl('kpiLikesSub', 'avg likes per post');
-  setEl('kpiComments', avgComments.toFixed(1));
-  const zeroC = filtered.filter(p => p.commentsCount===0).length;
-  setEl('kpiCommentsSub', `${zeroC} dari ${filtered.length} post = 0`);
-  setEl('kpiViews', avgViews>0 ? Math.round(avgViews).toLocaleString('id') : '—');
-  setEl('kpiViewsSub', videoPosts.length>0 ? `dari ${videoPosts.length} post video` : 'belum ada data video');
+    if (updatedAt) {
+      const d=new Date(updatedAt);
+      badge.textContent=`Update ${d.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})}`;
+      badge.className='scrape-badge';
+    } else {
+      badge.textContent='Belum ada data'; badge.className='scrape-badge';
+    }
 
-  renderPosts(null, filtered);
-  renderTop3(filtered, FOLLOWERS);
-  renderInsights(filtered, FOLLOWERS);
-  renderReko(filtered, FOLLOWERS);
-  animateBarsGlobal();
+    if (_allPosts.length) {
+      const s=[..._allPosts].sort((a,b)=>a.timestamp.localeCompare(b.timestamp));
+      $("dateFrom").value=s[0].timestamp;
+      $("dateTo").value=s[s.length-1].timestamp;
+    }
+
+    renderOverview();
+    renderGrowth();
+    renderAll();
+
+  } catch(e) {
+    badge.textContent='Gagal memuat'; badge.className='scrape-badge error';
+    toast('⚠️ Gagal memuat data. Coba refresh halaman.');
+    console.error(e);
+  }
 }
 
-/* ════════════════════════════════════
-   TOP 3 OVERVIEW
-════════════════════════════════════ */
-function renderTop3(posts, FOLLOWERS) {
-  const container = document.getElementById('top3Container');
-  if (!container) return;
-  if (!posts.length) { container.innerHTML = '<p style="font-size:12px;color:var(--dim);padding:8px">Tidak ada data di periode ini.</p>'; return; }
+/* ══════════════════════════
+   RENDER ALL
+══════════════════════════ */
+function renderAll() {
+  const fp=getFiltered();
+  renderKPIs(fp);
+  renderTop3(fp);
+  renderPosts(fp);
+  renderInsights(fp,_followers);
+  renderReko(fp,_followers);
+  renderIndexDynamicNotes(fp);
+  animateBars();
+}
 
-  const TYPE_ICON  = { Sidecar:'🗂️', Video:'🎬', Image:'🖼️' };
-  const TYPE_COLOR = { Sidecar:'#5046e4', Video:'#0ea5e9', Image:'#f59e0b' };
-  const ranked     = [...posts].sort((a,b) => eng(b)-eng(a)).slice(0,3);
-  const allER      = posts.map(p => erPct(p,FOLLOWERS));
-  const avgERAll   = allER.reduce((s,v)=>s+v,0)/allER.length;
+/* ── KPIs + overview dynamic sections ── */
+function renderKPIs(fp) {
+  const f=_followers;
+  const avgL=fp.length?fp.reduce((s,p)=>s+p.likesCount,0)/fp.length:0;
+  const avgC=fp.length?fp.reduce((s,p)=>s+p.commentsCount,0)/fp.length:0;
+  const avgE=fp.length?fp.reduce((s,p)=>s+erPct(p,f),0)/fp.length:0;
+  const vids=fp.filter(p=>p.videoViewCount);
+  const avgV=vids.length?vids.reduce((s,p)=>s+(p.videoViewCount||0),0)/vids.length:0;
 
-  function analyzePost(p, rank) {
-    const er    = erPct(p, FOLLOWERS);
-    const above = ((er - avgERAll) / avgERAll * 100).toFixed(0);
-    const reasons = [];
+  const byW=groupBy(fp,isoWeek), wKeys=Object.keys(byW).sort();
+  const wCurr=wKeys.at(-1)?avgER(byW[wKeys.at(-1)],f):null;
+  const wPrev=wKeys.at(-2)?avgER(byW[wKeys.at(-2)],f):null;
+  const wDelta=wCurr&&wPrev?(wCurr-wPrev)/wPrev*100:null;
 
-    if (p.commentsCount > 0) reasons.push(`mendapat <strong>${p.commentsCount} komentar</strong> — sinyal diskusi aktif yang diprioritaskan algoritma`);
-    if (p.type === 'Sidecar') reasons.push(`format <strong>Carousel</strong> mendorong swipe behavior → lebih lama di konten → distribusi lebih luas`);
-    if ((p.caption||'').length > 100) reasons.push(`caption panjang memberikan konteks yang cukup untuk menarik audience yang relevan`);
-    if (p.videoViewCount && p.videoViewCount > 800) reasons.push(`video views <strong>${p.videoViewCount.toLocaleString()}</strong> — reach organik tinggi dari non-followers`);
-    if ((p.caption||'').match(/\?/)) reasons.push(`caption berisi pertanyaan yang mendorong interaksi langsung dari pembaca`);
-    if (reasons.length === 0) reasons.push(`kombinasi timing, topik, dan format yang resonan dengan audience @ummadentalcare`);
+  setEl('kpiFollowers',    f.toLocaleString('id'));
+  setEl('kpiFollowersSub', 'akun ini');
+  setEl('kpiPostCount',    _allPosts.length);
+  setEl('kpiER',           avgE.toFixed(2)+'%');
+  setEl('kpiLikes',        Math.round(avgL).toLocaleString('id'));
+  setEl('kpiComments',     avgC.toFixed(1));
+  setEl('kpiViews',        avgV>0?Math.round(avgV).toLocaleString('id'):'—');
+  setEl('kpiViewsSub',     vids.length>0?`${vids.length} video`:'data terbatas');
 
-    const erLabel = er > avgERAll
-      ? `<strong>${above}% di atas</strong> avg periode ini (${erFmt(avgERAll)})`
-      : `ER ${erFmt(er)}`;
-
-    return `ER ${erFmt(er)} — ${erLabel}. ${reasons.slice(0,2).join('; ')}.`;
+  const erSub=$('kpiERsub');
+  if (erSub) {
+    if (wDelta!==null) {
+      const dir=wDelta>=0?'up':'down',arr=wDelta>=0?'▲':'▼';
+      erSub.innerHTML=`<span class="delta ${dir}">${arr} ${Math.abs(wDelta).toFixed(0)}% WoW</span>`;
+    } else {
+      erSub.textContent=`${fp.length} post`;
+    }
   }
 
-  container.innerHTML = ranked.map((p, i) => {
-    const typeColor = TYPE_COLOR[p.type] || '#999';
-    const viewsHTML = p.videoViewCount ? `<div class="top3-stat">👁 <strong>${Number(p.videoViewCount).toLocaleString()}</strong></div>` : '';
-    const linkHTML  = p.url ? `<a class="top3-link" href="${p.url}" target="_blank" rel="noopener">Buka di Instagram ↗</a>` : '';
+  // Health card
+  const latestPost=fp.length?[...fp].sort((a,b)=>b.timestamp.localeCompare(a.timestamp))[0]:null;
+  const daysInactive=latestPost?Math.floor((new Date()-new Date(latestPost.timestamp))/86400000):0;
+  const lb=erLabel(avgE);
+  let emoji,title,desc;
+  if (!fp.length) {
+    emoji='📭'; title='Tidak ada post di periode ini'; desc='Ubah filter tanggal untuk melihat data.';
+  } else if (daysInactive>30) {
+    emoji='💤'; title=`Akun Sedang Vakum (${daysInactive} hari)`;
+    desc=`Secara historis rata-rata ER kamu ${avgE.toFixed(2)}% (${lb.txt}), tapi sudah lama tidak posting. Waktunya kembali aktif!`;
+  } else if (avgE>=3) {
+    emoji='🔥'; title=`Engagement bagus — ${avgE.toFixed(2)}% ER`;
+    desc='Di atas rata-rata akun klinik/kesehatan gigi. Pertahankan momentum ini.';
+  } else if (avgE>=1) {
+    emoji='✅'; title=`Engagement rata-rata — ${avgE.toFixed(2)}% ER`;
+    desc='Masih oke, ada ruang naik. Coba tambah pertanyaan di caption dan posting lebih konsisten.';
+  } else {
+    emoji='⚠️'; title=`Engagement perlu perhatian — ${avgE.toFixed(2)}% ER`;
+    desc='Di bawah rata-rata akun sejenis. Fokus ke kualitas edukasi dan interaksi dulu.';
+  }
+  setEl('ovHealthEmoji', emoji);
+  setEl('ovHealthTitle', title);
+  setEl('ovHealthDesc',  desc);
+
+  // Signal pills
+  const zeroC=fp.filter(p=>p.commentsCount===0).length;
+  const pctZeroC=fp.length?Math.round(zeroC/fp.length*100):0;
+  const signals=[lb];
+  if (wDelta!==null) {
+    const up=wDelta>=0;
+    signals.push({dot:up?'#16a34a':'#dc2626',txt:`${up?'▲':'▼'} ${Math.abs(wDelta).toFixed(0)}% minggu ini`,
+      bg:up?'#f0fdf4':'#fee2e2',border:up?'#bbf7d0':'#fca5a5',clr:up?'#16a34a':'#dc2626'});
+  }
+  if (pctZeroC>60) {
+    signals.push({dot:'#d97706',txt:`${pctZeroC}% post tanpa komentar`,bg:'#fef3c7',border:'#fde68a',clr:'#d97706'});
+  } else if (fp.length>0) {
+    signals.push({dot:'#16a34a',txt:`${100-pctZeroC}% post ada komentarnya`,bg:'#f0fdf4',border:'#bbf7d0',clr:'#16a34a'});
+  }
+  const sigEl=$('ovSignals');
+  if (sigEl) sigEl.innerHTML=signals.map(s=>
+    `<div class="ov-signal" style="background:${s.bg};border-color:${s.border};color:${s.clr}">
+      <span class="ov-signal-dot" style="background:${s.dot}"></span>${s.txt}
+    </div>`).join('');
+
+  // Best type
+  const typeER={};
+  fp.forEach(p=>{(typeER[p.type]=typeER[p.type]||[]).push(erPct(p,f));});
+  const typeAvg=Object.entries(typeER).map(([t,es])=>({t,avg:es.reduce((a,v)=>a+v,0)/es.length,n:es.length})).sort((a,b)=>b.avg-a.avg);
+  if (typeAvg.length) {
+    const best=typeAvg[0];
+    setEl('ovBestTypeIcon', TYPE_ICON[best.t]||'📄');
+    setEl('ovBestTypeName', `${best.t==='Sidecar'?'Carousel':best.t} · ${best.n} post`);
+    setEl('ovBestTypeER',   best.avg.toFixed(2)+'%');
+  }
+}
+
+/* ── Top 3 with short "why it worked" tag ── */
+const EMO_WORDS = ['takut','trauma','sakit','nyeri','bahagia','senyum','percaya diri','cerita','pengalaman','kisah','sedih','haru','bangga'];
+
+function shortReasonTag(p) {
+  const cap = (p.caption||'').toLowerCase();
+  const hasQ = cap.includes('?');
+  const longCap = (p.caption||'').length > 100;
+  const isEmo = EMO_WORDS.some(w=>cap.includes(w));
+  if (longCap && hasQ)  return 'Caption panjang + pertanyaan';
+  if (isEmo)            return 'Topik emosional / personal';
+  if (p.type==='Sidecar') return 'Format carousel (edukasi bertahap)';
+  if (p.commentsCount>0 && hasQ) return 'Memancing diskusi di komentar';
+  if (p.videoViewCount && p.videoViewCount>800) return 'Reach video tinggi';
+  if (hasQ)              return 'Ada pertanyaan di caption';
+  if (longCap)           return 'Caption dengan konteks lengkap';
+  return 'Timing & topik pas';
+}
+
+function renderTop3(fp) {
+  const f=_followers;
+  const top=[...fp].sort((a,b)=>(b.likesCount+b.commentsCount)-(a.likesCount+a.commentsCount)).slice(0,3);
+  const el=$('top3Container');
+  if (!el) return;
+  if (!top.length) {el.innerHTML='<div class="empty">Tidak ada post di periode ini.</div>'; return;}
+  el.innerHTML=top.map((p,i)=>{
+    const er=erPct(p,f).toFixed(2), tc=TYPE_COLOR[p.type]||'#999';
+    const thumb=p.displayUrl?`<img src="${p.displayUrl}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='${TYPE_ICON[p.type]||'📄'}';"> `:(TYPE_ICON[p.type]||'📄');
+    const capInner=p.url?`<a href="${p.url}" target="_blank" rel="noopener">${p.caption||'(no caption)'}</a>`:(p.caption||'(no caption)');
+    const link=p.url?`<a class="post-link" href="${p.url}" target="_blank" rel="noopener">Buka ↗</a>`:'';
     return `
       <div class="top3-card">
-        <div class="top3-rank-row">
-          <span class="top3-rank">#${i+1} Top Post</span>
-          <span class="top3-type" style="color:${typeColor};border-color:${typeColor}30;background:${typeColor}10">
-            ${TYPE_ICON[p.type]||'📄'} ${p.type}
-          </span>
-          <span class="top3-date">${p.timestamp}</span>
+        <span class="top3-rank ${RANK_CLS[i]}">${RANK_LABEL[i]}</span>
+        <div class="top3-thumb">${thumb}</div>
+        <div class="top3-body">
+          <p class="top3-cap">${capInner}</p>
+          <div class="top3-meta">
+            <span style="font-size:10px;font-weight:500;padding:1px 6px;border-radius:4px;background:${tc}18;color:${tc}">${p.type}</span>
+            <span class="top3-stat">❤️ ${p.likesCount} · 💬 ${p.commentsCount}</span>
+            <span class="top3-er">${er}% ER</span>${link}
+          </div>
+          <span class="top3-why">💡 ${shortReasonTag(p)}</span>
         </div>
-        <p class="top3-caption">${p.caption || '(no caption)'}</p>
-        <div class="top3-stats">
-          <div class="top3-stat">❤️ <strong>${p.likesCount.toLocaleString()}</strong></div>
-          <div class="top3-stat">💬 <strong>${p.commentsCount}</strong></div>
-          ${viewsHTML}
-          <span class="top3-er">${erFmt(erPct(p,FOLLOWERS))} ER</span>
+      </div>`;
+  }).join('');
+}
+
+/* ── Overview: ER chart + consistency (rendered once) ── */
+function renderOverview() {
+  const recent=[..._allPosts].slice(0,12).reverse();
+  const erVals=recent.map(p=>+erPct(p,_followers).toFixed(2));
+  const avgAll=erVals.length?erVals.reduce((a,v)=>a+v,0)/erVals.length:0;
+
+  destroyChart('erChart');
+  if (recent.length) {
+    _charts.erChart=new Chart($('erChart'),{
+      type:'line',
+      data:{
+        labels:recent.map(p=>p.timestamp.slice(5)),
+        datasets:[
+          {label:'ER',data:erVals,borderColor:ACCENT,backgroundColor:ACCENT+'12',
+           borderWidth:2,pointRadius:4,pointHoverRadius:6,
+           pointBackgroundColor:erVals.map(v=>v>=avgAll?ACCENT:'#dc2626'),fill:true,tension:0.35},
+          {label:'Avg',data:erVals.map(()=>+avgAll.toFixed(2)),
+           borderColor:'#d1cec8',borderWidth:1,borderDash:[4,3],pointRadius:0,fill:false},
+        ]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{...TOOLTIP,callbacks:{
+          label:ctx=>ctx.datasetIndex===0?` ER: ${ctx.parsed.y.toFixed(2)}%`:` Avg: ${ctx.parsed.y.toFixed(2)}%`,
+          afterLabel:ctx=>ctx.datasetIndex===0?`Status: ${erLabel(ctx.parsed.y).txt}`:''
+        }}},
+        scales:{
+          y:{grid:{color:'#f0ede8'},ticks:{callback:v=>v+'%'},suggestedMin:0,suggestedMax:Math.max(...erVals)*1.3||2},
+          x:{grid:{display:false},ticks:{maxRotation:45}}
+        }
+      }
+    });
+  }
+
+  const el=$('erChartNote');
+  if (el) el.textContent = recent.length
+    ? `Garis putus-putus = rata-rata ER (${avgAll.toFixed(2)}%). Titik merah = di bawah rata-rata.`
+    : 'Belum ada data post untuk ditampilkan.';
+
+  // Consistency dots — 8 minggu terakhir
+  const byW=groupBy(_allPosts,isoWeek);
+  const now=new Date(), last8W=[];
+  for (let i=7;i>=0;i--) {
+    const d=new Date(now.getTime()-(i*7*24*60*60*1000)); last8W.push(isoWeek(d));
+  }
+  const activeCnt=last8W.filter(k=>byW[k]?.length>0).length;
+  const dotsEl=$('ovWeekDots');
+  if (dotsEl) dotsEl.innerHTML=last8W.map(k=>{
+    const n=byW[k]?.length||0;
+    return `<div class="ov-week-dot ${n>=2?'active':n===1?'low':''}" title="${k}: ${n} post"></div>`;
+  }).join('');
+  const descEl=$('ovConsistencyDesc');
+  if (descEl) {
+    if (activeCnt>=7) descEl.innerHTML=`<strong>Sangat konsisten</strong> — aktif ${activeCnt}/8 minggu terakhir. Bagus untuk algoritma Instagram.`;
+    else if (activeCnt>=5) descEl.innerHTML=`<strong>Cukup konsisten</strong> — aktif ${activeCnt}/8 minggu. Coba isi minggu kosong minimal 1 post.`;
+    else descEl.innerHTML=`<strong>Kurang konsisten</strong> — hanya aktif ${activeCnt}/8 minggu. Buat jadwal minimal 1 post/minggu.`;
+  }
+}
+
+/* ── Growth ── */
+function erLabel(er) {
+  if (er>=5)  return {txt:'Luar biasa 🔥',clr:'#5046e4',bg:'#eeedfd',border:'#c7c3f9'};
+  if (er>=3)  return {txt:'Bagus ✅',    clr:'#16a34a',bg:'#f0fdf4',border:'#bbf7d0'};
+  if (er>=1)  return {txt:'Rata-rata',   clr:'#d97706',bg:'#fef3c7',border:'#fde68a'};
+  return       {txt:'Di bawah rata-rata',clr:'#dc2626',bg:'#fee2e2',border:'#fca5a5'};
+}
+
+function fmtPeriod(k) {
+  if (k.includes('W')) return k.replace(/\d{4}-/,'');
+  const [y,m]=k.split('-');
+  return new Date(+y,+m-1).toLocaleDateString('id-ID',{month:'short',year:'2-digit'});
+}
+
+function compareBlock(prevK,prevE,prevN,currK,currE,currN) {
+  const delta=prevE>0?(currE-prevE)/prevE*100:(currE>0?100:0);
+  const up=delta>=0,arrow=up?'▲':'▼',clr=up?'var(--green)':'var(--red)';
+  const maxE=Math.max(prevE,currE)*1.15||1;
+  const prevPct=(prevE/maxE*100).toFixed(0), currPct=(currE/maxE*100).toFixed(0);
+  let narasi='';
+  const absDelta=Math.abs(delta).toFixed(0);
+  if (prevN===0&&currN===0) narasi='Tidak ada aktivitas (0 post) di kedua periode.';
+  else if (currN===0) narasi='Wajar turun — kamu tidak memposting sama sekali di periode ini. Yuk, kembali aktif!';
+  else if (up) narasi=delta>=20?`Naik signifikan ${absDelta}% — konten di ${fmtPeriod(currK)} lebih resonan.`:`Naik ${absDelta}% — tren positif, pertahankan.`;
+  else narasi=Math.abs(delta)>=20?`Turun ${absDelta}% — cek apakah frekuensi atau topik berubah.`:`Turun sedikit ${absDelta}% — wajar terjadi.`;
+
+  return `
+    <div class="g-compare-row">
+      <div class="g-period-block">
+        <p class="g-period-name">${fmtPeriod(prevK)}</p>
+        <p class="g-period-er">${prevE.toFixed(2)}%</p>
+        <p class="g-period-posts">${prevN} post</p>
+      </div>
+      <div class="g-arrow-col" style="color:${clr};font-weight:700">${arrow}</div>
+      <div class="g-period-block curr">
+        <p class="g-period-name">${fmtPeriod(currK)}</p>
+        <p class="g-period-er" style="color:${clr}">${currE.toFixed(2)}%</p>
+        <p class="g-period-posts">${currN} post</p>
+      </div>
+    </div>
+    <div class="g-bar-compare">
+      <div class="g-bar-col">
+        <p class="g-bar-name">${fmtPeriod(prevK)}</p>
+        <div class="g-bar-track"><div class="g-bar-fill" data-w="${prevPct}" style="background:#d1cec8"></div></div>
+      </div>
+      <div class="g-bar-col">
+        <p class="g-bar-name">${fmtPeriod(currK)}</p>
+        <div class="g-bar-track"><div class="g-bar-fill" data-w="${currPct}" style="background:${clr}"></div></div>
+      </div>
+    </div>
+    <div class="g-verdict" style="background:${up?'#f0fdf4':'#fff7ed'};color:${up?'#14532d':'#92400e'}">
+      ${prevN===0&&currN===0?'':`<span class="delta ${up?'up':'down'}" style="margin-right:6px">${arrow} ${Math.abs(delta).toFixed(1)}%</span>`}
+      ${narasi}
+    </div>`;
+}
+
+function renderGrowth() {
+  const f=_followers;
+  const byW=groupBy(_allPosts,isoWeek), byM=groupBy(_allPosts,isoMonth);
+  const now=new Date();
+  const wCurrK=isoWeek(now.toISOString()), wPrevK=isoWeek(new Date(now.getTime()-7*86400000).toISOString());
+  const mCurrK=isoMonth(now.toISOString()), mPrevK=isoMonth(new Date(now.getFullYear(),now.getMonth()-1,1).toISOString());
+
+  const wCurrN=byW[wCurrK]?.length||0, wPrevN=byW[wPrevK]?.length||0;
+  const wCurr=wCurrN?avgER(byW[wCurrK],f):0, wPrev=wPrevN?avgER(byW[wPrevK],f):0;
+  const mCurrN=byM[mCurrK]?.length||0, mPrevN=byM[mPrevK]?.length||0;
+  const mCurr=mCurrN?avgER(byM[mCurrK],f):0, mPrev=mPrevN?avgER(byM[mPrevK],f):0;
+  const overallER=_allPosts.length?avgER(_allPosts,f):0;
+
+  // Status card
+  let statusEmoji,statusTitle,statusDesc;
+  if (mCurrN===0&&mPrevN===0&&wCurrN===0&&wPrevN===0) {
+    statusEmoji='💤'; statusTitle='Akun Sedang Vakum';
+    statusDesc='Kamu belum memposting konten baru belakangan ini. Grafik di bawah menunjukkan performa historis.';
+  } else {
+    const momD=mPrev>0?(mCurr-mPrev)/mPrev*100:(mCurr>0?100:0);
+    const wowD=wPrev>0?(wCurr-wPrev)/wPrev*100:(wCurr>0?100:0);
+    if (momD>=10||wowD>=10) {
+      statusEmoji='🚀'; statusTitle='Engagement sedang naik!';
+      statusDesc='Rata-rata interaksi per post lebih tinggi dari periode sebelumnya.';
+    } else if (momD>=-10&&wowD>=-10) {
+      statusEmoji='😐'; statusTitle='Stabil — tidak naik, tidak turun';
+      statusDesc='Engagement relatif flat. Coba variasi format atau topik edukasi baru.';
+    } else {
+      statusEmoji='⚠️'; statusTitle='Engagement sedang turun';
+      statusDesc='Interaksi per post lebih rendah dari periode lalu.';
+    }
+  }
+  setEl('growthStatusEmoji', statusEmoji);
+  setEl('growthStatusTitle', statusTitle);
+  setEl('growthStatusDesc',  statusDesc);
+
+  setEl('wowCompare', compareBlock(wPrevK,wPrev,wPrevN,wCurrK,wCurr,wCurrN));
+  setEl('momCompare', compareBlock(mPrevK,mPrev,mPrevN,mCurrK,mCurr,mCurrN));
+
+  // Benchmark gauge
+  const gaugeMax=8, gaugePos=Math.min(overallER/gaugeMax*100,100);
+  const lb=erLabel(overallER);
+  setTimeout(()=>{ const m=$('benchMarker'); if(m) m.style.left=gaugePos.toFixed(1)+'%'; },300);
+  const bv=$('benchVerdict');
+  if (bv) {
+    bv.textContent=`ER kamu rata-rata ${overallER.toFixed(2)}% — ${lb.txt}`;
+    bv.style.cssText=`background:${lb.bg};color:${lb.clr};border:1px solid ${lb.border};font-size:12px;font-weight:600;text-align:center;padding:6px 10px;border-radius:var(--r-sm)`;
+  }
+
+  // Charts
+  const wKeys=Object.keys(byW).sort(), mKeys=Object.keys(byM).sort();
+  const wL=wKeys.slice(-10);
+  destroyChart('weeklyChart');
+  if (wL.length) _charts.weeklyChart=new Chart($('weeklyChart'),{
+    type:'bar',
+    data:{labels:wL.map(k=>k.replace(/\d{4}-/,'')),datasets:[{
+      data:wL.map(k=>+avgER(byW[k],f).toFixed(2)),
+      backgroundColor:wL.map((_,i)=>i===wL.length-1?ACCENT:ACCENT+'55'),
+      borderRadius:5,borderSkipped:false
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...TOOLTIP,callbacks:{
+      label:ctx=>` ER: ${ctx.parsed.y.toFixed(2)}%`,afterLabel:ctx=>`Status: ${erLabel(ctx.parsed.y).txt}`
+    }}},scales:{y:{grid:{color:'#f0ede8'},ticks:{callback:v=>v+'%'},suggestedMax:Math.max(...wL.map(k=>avgER(byW[k],f)))*1.3||2},x:{grid:{display:false}}}}
+  });
+  destroyChart('monthlyChart');
+  if (mKeys.length) _charts.monthlyChart=new Chart($('monthlyChart'),{
+    type:'bar',
+    data:{labels:mKeys.map(fmtPeriod),datasets:[{
+      data:mKeys.map(k=>+avgER(byM[k],f).toFixed(2)),
+      backgroundColor:mKeys.map((_,i)=>i===mKeys.length-1?ACCENT:ACCENT+'55'),
+      borderRadius:5,borderSkipped:false
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...TOOLTIP,callbacks:{
+      label:ctx=>` ER: ${ctx.parsed.y.toFixed(2)}%`,afterLabel:ctx=>`Status: ${erLabel(ctx.parsed.y).txt}`
+    }}},scales:{y:{grid:{color:'#f0ede8'},ticks:{callback:v=>v+'%'},suggestedMax:Math.max(...mKeys.map(k=>avgER(byM[k],f)))*1.3||2},x:{grid:{display:false}}}}
+  });
+  updateGrowthChartNote('weekly');
+
+  // Takeaways
+  const takeaways=[];
+  const last8W=[];
+  for (let i=7;i>=0;i--) { const d=new Date(now.getTime()-(i*7*86400000)); last8W.push(isoWeek(d)); }
+  const activeW=last8W.filter(k=>byW[k]?.length>0).length;
+  takeaways.push(activeW>=6
+    ? {icon:'✅',text:`Kamu aktif di <strong>${activeW} dari 8 minggu terakhir</strong> — konsistensi ini bagus untuk algoritma Instagram.`}
+    : {icon:'⚠️',text:`Hanya aktif di <strong>${activeW} dari 8 minggu terakhir</strong> — coba posting minimal 1× per minggu supaya algoritma tidak "lupa" akun kamu.`});
+
+  if (mCurrN>0&&mPrevN>0) {
+    const momD=(mCurr-mPrev)/mPrev*100;
+    if (mCurrN>mPrevN&&momD<0) takeaways.push({icon:'💡',text:`Bulan ini posting <strong>lebih sering (${mCurrN} vs ${mPrevN})</strong> tapi ER justru turun. Kurangi frekuensi, fokus ke kualitas.`});
+    else if (mCurrN<=mPrevN&&momD>=0) takeaways.push({icon:'💡',text:`Post lebih sedikit tapi ER naik — <strong>kualitas mengalahkan kuantitas</strong>. Pertahankan frekuensi ${mCurrN} post/bulan.`});
+  }
+
+  if (overallER>=3) takeaways.push({icon:'🎯',text:`ER ${overallER.toFixed(2)}% kamu <strong>di atas rata-rata akun klinik/kesehatan gigi</strong>. Nilai jual kuat untuk kredibilitas klinik.`});
+  else if (overallER>=1) takeaways.push({icon:'🎯',text:`ER ${overallER.toFixed(2)}% masih di range rata-rata. Target <strong>di atas 3%</strong> — caranya: tambah pertanyaan di caption dan balas komentar cepat.`});
+  else takeaways.push({icon:'🎯',text:`ER ${overallER.toFixed(2)}% masih di bawah rata-rata. Fokus dulu ke <strong>kualitas konten edukasi (Carousel)</strong> dan interaksi aktif di komentar.`});
+
+  if (mKeys.length>=3) {
+    const mERs=mKeys.map(k=>({k,er:avgER(byM[k],f)}));
+    const bestM=[...mERs].sort((a,b)=>b.er-a.er)[0];
+    if (bestM) takeaways.push({icon:'📅',text:`Bulan terbaik: <strong>${fmtPeriod(bestM.k)} (${bestM.er.toFixed(2)}%)</strong>. Cek frekuensi, topik, dan format di bulan itu sebagai referensi content plan.`});
+  }
+
+  setEl('growthTakeaways',takeaways.map(t=>`<div class="g-takeaway"><span class="g-takeaway-icon">${t.icon}</span><p class="g-takeaway-text">${t.text}</p></div>`).join(''));
+}
+
+function updateGrowthChartNote(type) {
+  const notes={
+    weekly:'Bar terakhir (lebih gelap) = minggu terbaru. Hover bar untuk lihat ER.',
+    monthly:'Bar terakhir = bulan terbaru. Lihat tren jangka panjang, bukan 1 bulan saja.',
+  };
+  const el=$('growthChartNote'); if(el) el.textContent=notes[type]||'';
+}
+function switchGrowthChart(type,btn) {
+  document.querySelectorAll('.g-chart-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  $('weeklyWrap').style.display  =type==='weekly'?'block':'none';
+  $('monthlyWrap').style.display =type==='monthly'?'block':'none';
+  updateGrowthChartNote(type); animateBars();
+}
+
+/* ── Posts (single list, no secondary filter — respects the main date-range filter above) ── */
+function renderPosts(fp) {
+  const f=_followers;
+  const posts=fp||getFiltered();
+  const ranked=[...posts].sort((a,b)=>(b.likesCount+b.commentsCount)-(a.likesCount+a.commentsCount)).slice(0,30);
+  const el=$('topPostsContainer');
+  if (!el) return;
+  if (!ranked.length) {el.innerHTML='<div class="empty">Tidak ada post di periode ini.</div>'; return;}
+  el.innerHTML=ranked.map((p,i)=>{
+    const er=erPct(p,f).toFixed(3), tc=TYPE_COLOR[p.type]||'#999';
+    const views=p.videoViewCount?`<span class="post-views">👁 ${Number(p.videoViewCount).toLocaleString()}</span>`:'';
+    const link=p.url?`<a class="post-link" href="${p.url}" target="_blank" rel="noopener">Buka ↗</a>`:'';
+    const thumb=p.displayUrl?`<img src="${p.displayUrl}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='${TYPE_ICON[p.type]||'📄'}';"> `:(TYPE_ICON[p.type]||'📄');
+    const cap=p.url?`<a href="${p.url}" target="_blank" rel="noopener">${p.caption||'(no caption)'}</a>`:(p.caption||'(no caption)');
+    return `
+      <div class="post-item">
+        <span class="post-rank">#${i+1}</span>
+        <div class="post-thumb">${thumb}</div>
+        <div class="post-body">
+          <p class="post-caption">${cap}</p>
+          <div class="post-meta">
+            <span class="post-tag" style="color:${tc};border-color:${tc}20;background:${tc}10">${p.type}</span>
+            <span class="post-tag">${p.timestamp}</span>
+            <span class="post-stat">❤️ ${p.likesCount.toLocaleString()} · 💬 ${p.commentsCount}</span>
+            ${views}<span class="post-er">${er}% ER</span>${link}
+          </div>
         </div>
-        <div class="top3-analysis">💡 ${analyzePost(p, i+1)}</div>
-        ${linkHTML}
       </div>`;
   }).join('');
 }
@@ -927,15 +1420,9 @@ function renderTop3(posts, FOLLOWERS) {
 function renderInsights(posts, FOLLOWERS) {
   const wEl   = document.getElementById('insightWorking');
   const nwEl  = document.getElementById('insightNotWorking');
-  const tsEl  = document.getElementById('insightTimestamp');
   const subW  = document.getElementById('insightWorkingSubtitle');
   const subNW = document.getElementById('insightNotWorkingSubtitle');
   if (!wEl || !nwEl) return;
-
-  const now = new Date();
-  const tsStr = now.toLocaleString('id-ID', {day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}) + ' WIB';
-  const updatedAt = window._appUpdatedAt || '—';
-  if (tsEl) tsEl.innerHTML = `<span>🕐</span><span>Insight dibuat: <strong>${tsStr}</strong> &nbsp;·&nbsp; Data dari scrape: <strong>${updatedAt}</strong></span>`;
 
   if (!posts.length) {
     wEl.innerHTML  = '<p style="font-size:12px;color:var(--dim);padding:8px">Tidak ada data di periode ini.</p>';
@@ -943,143 +1430,207 @@ function renderInsights(posts, FOLLOWERS) {
     return;
   }
 
-  if (subW) subW.textContent = `Dari ${posts.length} post di periode yang dipilih`;
+  if (subW)  subW.textContent  = `Dari ${posts.length} post di periode yang dipilih`;
   if (subNW) subNW.textContent = `Pola yang perlu diperbaiki dari ${posts.length} post`;
 
-  const erOf    = p => erPct(p, FOLLOWERS);
-  const allERs  = posts.map(erOf);
+  const erOf     = p => erPct(p, FOLLOWERS);
+  const allERs   = posts.map(erOf);
   const avgERall = allERs.reduce((s,v)=>s+v,0)/allERs.length;
-  const sorted  = [...posts].sort((a,b) => erOf(b)-erOf(a));
-  const top50   = sorted.slice(0, Math.ceil(sorted.length/2));
-  const bot50   = sorted.slice(Math.ceil(sorted.length/2));
+  const sorted   = [...posts].sort((a,b) => erOf(b)-erOf(a));
+  const top50    = sorted.slice(0, Math.max(1, Math.ceil(sorted.length/2)));
+  const bot50    = sorted.slice(Math.max(1, Math.ceil(sorted.length/2)));
 
-  // Type analysis
-  const byType = posts.reduce((acc,p)=>{ (acc[p.type]=acc[p.type]||[]).push(p); return acc; },{});
-  const typeStats = Object.entries(byType).map(([t,ps])=>({
-    type:t, count:ps.length, avgER: ps.reduce((s,p)=>s+erOf(p),0)/ps.length
-  })).sort((a,b)=>b.avgER-a.avgER);
+  // ── TYPE ANALYSIS ──
+  const byType    = posts.reduce((acc,p)=>{ (acc[p.type]=acc[p.type]||[]).push(p); return acc; },{});
+  const typeStats = Object.entries(byType)
+    .map(([t,ps])=>({type:t, count:ps.length, avgER:ps.reduce((s,p)=>s+erOf(p),0)/ps.length}))
+    .sort((a,b)=>b.avgER-a.avgER);
   const bestType  = typeStats[0];
   const worstType = typeStats[typeStats.length-1];
+  const singleType = typeStats.length === 1;
 
-  // Comment analysis
+  // ── COMMENT ANALYSIS ──
   const withCmt    = posts.filter(p=>p.commentsCount>0);
   const zeroCmt    = posts.filter(p=>p.commentsCount===0);
   const pctZero    = Math.round(zeroCmt.length/posts.length*100);
   const avgERWithC = withCmt.length ? withCmt.reduce((s,p)=>s+erOf(p),0)/withCmt.length : 0;
+  const avgERNoC   = zeroCmt.length ? zeroCmt.reduce((s,p)=>s+erOf(p),0)/zeroCmt.length : 0;
 
-  // Caption length
+  // ── CAPTION LENGTH ──
   const longCap  = posts.filter(p=>(p.caption||'').length>100);
   const shortCap = posts.filter(p=>(p.caption||'').length<=100);
-  const erLong   = longCap.length  ? longCap.reduce((s,p)=>s+erOf(p),0)/longCap.length  : 0;
-  const erShort  = shortCap.length ? shortCap.reduce((s,p)=>s+erOf(p),0)/shortCap.length : 0;
+  const erLong   = longCap.length  ? longCap.reduce((s,p)=>s+erOf(p),0)/longCap.length   : 0;
+  const erShort  = shortCap.length ? shortCap.reduce((s,p)=>s+erOf(p),0)/shortCap.length  : 0;
 
-  // Video views
+  // ── VIDEO VIEWS ──
   const highView = posts.filter(p=>p.videoViewCount && p.videoViewCount>=800);
   const lowView  = posts.filter(p=>p.videoViewCount && p.videoViewCount<800);
   const erHigh   = highView.length ? highView.reduce((s,p)=>s+erOf(p),0)/highView.length : 0;
   const erLow    = lowView.length  ? lowView.reduce((s,p)=>s+erOf(p),0)/lowView.length   : 0;
 
-  // Posting frequency by month
-  const byMonth = posts.reduce((acc,p)=>{ const m=p.timestamp.slice(0,7); (acc[m]=acc[m]||[]).push(p); return acc; },{});
-  const months  = Object.entries(byMonth).sort((a,b)=>a[0].localeCompare(b[0]));
+  // ── TOPIC / CAPTION PATTERN ANALYSIS (dental-clinic specific keywords) ──
+  const promoKeywords   = ['promo','diskon','booking','daftar','registrasi','jadwal buka','buka praktik','harga spesial','paket','buruan','kuota terbatas'];
+  const insightKeywords = ['gigi','gusi','mulut','senyum','nyeri','sakit gigi','scaling','behel','veneer','tambal','cabut','karang gigi','perawatan','konsultasi','dokter gigi','kesehatan mulut'];
 
-  // ── BUILD WORKING INSIGHTS ──
+  const promoPosts   = posts.filter(p => promoKeywords.some(k  => (p.caption||'').toLowerCase().includes(k)));
+  const insightPosts = posts.filter(p => insightKeywords.some(k => (p.caption||'').toLowerCase().includes(k)) &&
+                                         !promoKeywords.some(k  => (p.caption||'').toLowerCase().includes(k)));
+
+  const erPromo   = promoPosts.length   ? promoPosts.reduce((s,p)=>s+erOf(p),0)/promoPosts.length     : 0;
+  const erInsight = insightPosts.length ? insightPosts.reduce((s,p)=>s+erOf(p),0)/insightPosts.length : 0;
+
+  // ── ER SPREAD ──
+  const erMax = Math.max(...allERs), erMin = Math.min(...allERs), erSpread = erMax - erMin;
+
+  // ── MONTHLY ──
+  const byMonth  = posts.reduce((acc,p)=>{ const m=p.timestamp.slice(0,7); (acc[m]=acc[m]||[]).push(p); return acc; },{});
+  const months   = Object.entries(byMonth).sort((a,b)=>a[0].localeCompare(b[0]));
+
   const working = [];
-  if (bestType && typeStats.length > 1) {
-    const pct = ((bestType.avgER - avgERall)/avgERall*100).toFixed(0);
-    working.push({
-      icon: bestType.type==='Sidecar'?'🗂️':bestType.type==='Video'?'🎬':'🖼️',
-      title: `${bestType.type} adalah format terkuat (avg ER ${erFmt(bestType.avgER)})`,
-      body: `${bestType.count} post format ${bestType.type} avg ER <strong>${erFmt(bestType.avgER)}</strong> — <strong>${pct}% di atas rata-rata</strong> periode ini (${erFmt(avgERall)}). Prioritaskan format ini dalam content plan.`
-    });
+
+  if (bestType) {
+    const dispType = bestType.type === 'Sidecar' ? 'Carousel' : bestType.type;
+    if (singleType) {
+      working.push({
+        icon: bestType.type==='Sidecar'?'🗂️':bestType.type==='Video'?'🎬':'🖼️',
+        title: `100% konten adalah ${dispType} — konsistensi format terbukti`,
+        body: `Semua ${bestType.count} post periode ini menggunakan format <strong>${dispType}</strong> dengan avg ER <strong>${erFmt(bestType.avgER)}</strong>. Pertahankan dan fokus naikkan kualitas edukasi per post.`
+      });
+    } else {
+      const pct = ((bestType.avgER - avgERall)/avgERall*100).toFixed(0);
+      working.push({
+        icon: bestType.type==='Sidecar'?'🗂️':bestType.type==='Video'?'🎬':'🖼️',
+        title: `${dispType} adalah format terkuat (avg ER ${erFmt(bestType.avgER)})`,
+        body: `${bestType.count} post format ${dispType} avg ER <strong>${erFmt(bestType.avgER)}</strong> — <strong>${pct}% di atas rata-rata</strong> (${erFmt(avgERall)}). Prioritaskan format ini.`
+      });
+    }
   }
-  if (withCmt.length > 0 && avgERWithC > avgERall) {
+
+  if (withCmt.length > 0 && avgERWithC > avgERNoC * 1.2 && avgERNoC > 0) {
+    const mult = (avgERWithC / avgERNoC).toFixed(1);
     working.push({
       icon: '💬',
-      title: `Post dengan komentar rata-rata ER ${erFmt(avgERWithC)}`,
-      body: `${withCmt.length} post yang mendapat komentar punya avg ER <strong>${erFmt(avgERWithC)}</strong> vs avg keseluruhan ${erFmt(avgERall)}. Algoritma IG sangat reward komentar sebagai sinyal kualitas konten.`
+      title: `Post dengan komentar ER-nya ${mult}× lebih tinggi`,
+      body: `${withCmt.length} post yang dapat komentar avg ER <strong>${erFmt(avgERWithC)}</strong> vs ${zeroCmt.length} post tanpa komentar (${erFmt(avgERNoC)}). Algoritma IG sangat reward komentar sebagai sinyal kualitas — ini indikator terkuat distribusi konten.`
     });
   }
-  if (longCap.length > 0 && erLong > erShort) {
+
+  if (insightPosts.length > 0 && promoPosts.length > 0 && erInsight > erPromo * 1.1) {
+    const gap = ((erInsight - erPromo)/erPromo*100).toFixed(0);
     working.push({
-      icon: '✍️',
-      title: `Caption panjang (>100 karakter) lebih tinggi ER-nya`,
-      body: `Caption panjang: avg ER <strong>${erFmt(erLong)}</strong> vs caption pendek: <strong>${erFmt(erShort)}</strong>. Konten yang menjelaskan "mengapa" lebih dalam terbukti resonan di periode ini.`
+      icon: '🧠',
+      title: `Konten edukasi ${gap}% lebih tinggi ER-nya dari konten promo`,
+      body: `${insightPosts.length} post bertopik edukasi gigi/perawatan avg ER <strong>${erFmt(erInsight)}</strong> vs ${promoPosts.length} post promo (${erFmt(erPromo)}). Konten yang langsung memberi value mengungguli konten promosi.`
     });
-  }
-  if (highView.length > 0 && erHigh > erLow) {
+  } else if (insightPosts.length > 0 && promoPosts.length === 0) {
     working.push({
-      icon: '🎬',
-      title: `Video views 800+ konsisten hasilkan ER lebih tinggi`,
-      body: `${highView.length} video dengan views ≥800: avg ER <strong>${erFmt(erHigh)}</strong>. ${lowView.length} video views &lt;800: avg ER <strong>${erFmt(erLow)}</strong>. Hook visual kuat di 3 detik pertama adalah kuncinya.`
+      icon: '🧠',
+      title: `Topik edukasi gigi & perawatan mendominasi — konsisten dengan positioning klinik`,
+      body: `Post dengan angle edukasi (perawatan, keluhan umum, prosedur) punya avg ER <strong>${erFmt(erInsight)}</strong>. Angle seperti ini membangun kepercayaan calon pasien.`
     });
   }
+
   if (sorted.length > 0) {
     const topPost = sorted[0];
+    const topER   = erOf(topPost);
+    const aboveAvg = avgERall>0 ? ((topER - avgERall)/avgERall*100).toFixed(0) : '0';
+    const cap60   = (topPost.caption||'').slice(0,60);
+    const hasQuestion   = (topPost.caption||'').includes('?');
+    const hasComment    = topPost.commentsCount > 0;
+    const isLongCaption = (topPost.caption||'').length > 100;
+    const reasons = [];
+    if (hasQuestion) reasons.push('caption berisi pertanyaan yang memancing respons');
+    if (hasComment)  reasons.push(`mendapat ${topPost.commentsCount} komentar`);
+    if (isLongCaption) reasons.push('caption panjang dengan konteks yang dalam');
     working.push({
       icon: '🏆',
-      title: `Top post: "${(topPost.caption||'').slice(0,55)}..."`,
-      body: `ER <strong>${erFmt(erOf(topPost))}</strong> — ${topPost.likesCount} likes, ${topPost.commentsCount} komentar${topPost.videoViewCount?', '+topPost.videoViewCount.toLocaleString()+' views':''}. Format: ${topPost.type}. Buat variasi konten dengan angle dan struktur serupa.`
+      title: `Top post: "${cap60}..." (ER ${erFmt(topER)})`,
+      body: `<strong>${aboveAvg}% di atas rata-rata</strong> — ${topPost.likesCount} likes, ${topPost.commentsCount} komentar. ${reasons.length ? 'Kenapa perform: '+reasons.join(', ')+'.' : ''} Buat variasi konten dengan struktur serupa.`
     });
   }
+
   if (months.length >= 2) {
-    const bestMonth = months.reduce((best,cur) => {
-      const avgCur = cur[1].reduce((s,p)=>s+erOf(p),0)/cur[1].length;
-      const avgBest = best[1].reduce((s,p)=>s+erOf(p),0)/best[1].length;
-      return avgCur > avgBest ? cur : best;
+    const bestMonth   = months.reduce((best,cur) => {
+      const er1 = cur[1].reduce((s,p)=>s+erOf(p),0)/cur[1].length;
+      const er2 = best[1].reduce((s,p)=>s+erOf(p),0)/best[1].length;
+      return er1 > er2 ? cur : best;
     });
     const bestMonthER = bestMonth[1].reduce((s,p)=>s+erOf(p),0)/bestMonth[1].length;
     working.push({
       icon: '📅',
-      title: `Bulan terbaik: ${bestMonth[0]} (avg ER ${erFmt(bestMonthER)})`,
-      body: `${bestMonth[1].length} post di ${bestMonth[0]} hasilkan avg ER <strong>${erFmt(bestMonthER)}</strong>. Pelajari frekuensi dan topik di bulan itu sebagai referensi content plan ke depan.`
+      title: `Bulan terbaik: ${bestMonth[0]} — avg ER ${erFmt(bestMonthER)}`,
+      body: `${bestMonth[1].length} post di ${bestMonth[0]} hasilkan avg ER <strong>${erFmt(bestMonthER)}</strong>. Pelajari frekuensi, topik, dan format di bulan itu sebagai referensi content plan ke depan.`
     });
   }
 
-  // ── BUILD NOT WORKING INSIGHTS ──
+  if (posts.length >= 4 && erSpread > avgERall * 0.5) {
+    working.push({
+      icon: '📊',
+      title: `Spread ER tinggi: ${erFmt(erMin)} – ${erFmt(erMax)} dalam periode ini`,
+      body: `Ada perbedaan besar antara post terbaik dan terlemah. Top 50% post avg ER <strong>${erFmt(top50.reduce((s,p)=>s+erOf(p),0)/top50.length)}</strong>, bottom 50% hanya <strong>${erFmt(bot50.reduce((s,p)=>s+erOf(p),0)/Math.max(1,bot50.length))}</strong>. Fokus analisis topik dan timing dari post terbaik untuk replikasi.`
+    });
+  }
+
   const notWorking = [];
+
   if (pctZero > 40) {
     notWorking.push({
       icon: '🔇',
       title: `${pctZero}% post (${zeroCmt.length}/${posts.length}) dapat 0 komentar`,
-      body: `Mayoritas caption berformat pernyataan satu arah tanpa mengundang respons. <strong>Fix: tutup setiap caption dengan 1 pertanyaan yang bisa dijawab dalam 1 kalimat.</strong>`
+      body: `Mayoritas caption berformat pernyataan satu arah tanpa mengundang respons. Algoritma Instagram reward komentar lebih dari likes. <strong>Fix: tutup setiap caption dengan 1 pertanyaan spesifik yang bisa dijawab 1 kalimat</strong> (mis. "Kamu terakhir scaling gigi kapan?").`
     });
   }
-  if (worstType && typeStats.length > 1 && worstType.type !== bestType.type) {
+
+  if (promoPosts.length > 0 && erPromo < avgERall * 0.85 && avgERall>0) {
+    const pctBelow = ((avgERall - erPromo)/avgERall*100).toFixed(0);
+    notWorking.push({
+      icon: '📢',
+      title: `Konten promo ${pctBelow}% di bawah rata-rata ER`,
+      body: `${promoPosts.length} post bertema promo/booking avg ER hanya <strong>${erFmt(erPromo)}</strong> vs rata-rata ${erFmt(avgERall)}. Audiens datang untuk edukasi, bukan iklan. <strong>Jika harus posting promo, bungkus dengan angle edukasi atau value dulu.</strong>`
+    });
+  }
+
+  if (!singleType && worstType && worstType.type !== bestType.type) {
+    const dispType = worstType.type === 'Sidecar' ? 'Carousel' : worstType.type;
     const pct = ((avgERall - worstType.avgER)/avgERall*100).toFixed(0);
     notWorking.push({
       icon: worstType.type==='Video'?'🎬':'🖼️',
-      title: `${worstType.type} punya ER terendah (avg ${erFmt(worstType.avgER)})`,
-      body: `${worstType.count} post ${worstType.type} rata-rata ER <strong>${erFmt(worstType.avgER)}</strong> — <strong>${pct}% di bawah rata-rata</strong>. Evaluasi angle dan hook konten format ini atau kurangi frekuensinya.`
+      title: `${dispType} punya ER terendah (avg ${erFmt(worstType.avgER)})`,
+      body: `${worstType.count} post ${dispType} rata-rata ER <strong>${erFmt(worstType.avgER)}</strong> — <strong>${pct}% di bawah rata-rata</strong>. Evaluasi angle dan hook konten format ini atau kurangi frekuensinya.`
     });
   }
-  if (shortCap.length > 0 && erShort < erLong && shortCap.length >= 2) {
-    notWorking.push({
-      icon: '📝',
-      title: `Caption pendek (≤100 karakter) underperform`,
-      body: `Post dengan caption singkat avg ER hanya <strong>${erFmt(erShort)}</strong>. Hindari posting tanpa konteks — tambahkan cerita, data, atau alasan di balik konten.`
-    });
-  }
+
   if (bot50.length > 0) {
-    const worst = bot50[0];
+    const worst    = bot50[0];
+    const isPromo  = promoKeywords.some(k=>(worst.caption||'').toLowerCase().includes(k));
+    const noQ      = !(worst.caption||'').includes('?');
+    const reasons  = [];
+    if (isPromo) reasons.push('topik promosi yang kurang engaging');
+    if (noQ)     reasons.push('tidak ada pertanyaan di caption');
+    if (worst.commentsCount===0) reasons.push('0 komentar');
     notWorking.push({
       icon: '📉',
-      title: `Post terlemah: "${(worst.caption||'').slice(0,55)}..."`,
-      body: `ER hanya <strong>${erFmt(erOf(worst))}</strong> — ${worst.likesCount} likes, ${worst.commentsCount} komentar. Format: ${worst.type}, tanggal: ${worst.timestamp}. Hindari topik dan format serupa.`
+      title: `Post terlemah: "${(worst.caption||'').slice(0,50)}..." (ER ${erFmt(erOf(worst))})`,
+      body: `${worst.likesCount} likes, ${worst.commentsCount} komentar. ${reasons.length?'Kemungkinan penyebab: '+reasons.join(', ')+'.':''} Format: ${worst.type}, tanggal: ${worst.timestamp}.`
     });
   }
+
   if (months.length >= 2) {
-    const highFreqMonth = months.reduce((a,b)=>b[1].length>a[1].length?b:a);
-    const highFreqER = highFreqMonth[1].reduce((s,p)=>s+erOf(p),0)/highFreqMonth[1].length;
-    const allMonthsAvgER = months.reduce((s,[,ps])=>s+ps.reduce((ss,p)=>ss+erOf(p),0)/ps.length,0)/months.length;
-    if (highFreqER < allMonthsAvgER * 0.9) {
+    const highFreqMonth  = months.reduce((a,b)=>b[1].length>a[1].length?b:a);
+    const highFreqER     = highFreqMonth[1].reduce((s,p)=>s+erOf(p),0)/highFreqMonth[1].length;
+    const otherMonths    = months.filter(m=>m[0]!==highFreqMonth[0]);
+    const otherMonthsER  = otherMonths.length
+      ? otherMonths.reduce((s,[,ps])=>s+ps.reduce((ss,p)=>ss+erOf(p),0)/ps.length,0) / otherMonths.length
+      : 0;
+    if (otherMonthsER>0 && highFreqER < otherMonthsER * 0.9) {
       notWorking.push({
         icon: '📅',
-        title: `Bulan dengan posting terbanyak (${highFreqMonth[0]}: ${highFreqMonth[1].length} post) justru ER terendah`,
-        body: `Frekuensi tinggi di ${highFreqMonth[0]} hasilkan avg ER <strong>${erFmt(highFreqER)}</strong> — di bawah rata-rata bulan lain. Lebih sedikit post berkualitas lebih efektif daripada overproduce.`
+        title: `Bulan posting terbanyak (${highFreqMonth[0]}: ${highFreqMonth[1].length} post) justru ER terendah`,
+        body: `Frekuensi tinggi di ${highFreqMonth[0]} hasilkan avg ER <strong>${erFmt(highFreqER)}</strong> vs bulan lain (${erFmt(otherMonthsER)}). Lebih sedikit post berkualitas konsisten lebih efektif.`
       });
     }
   }
+
   if (lowView.length > 1 && erLow < avgERall * 0.8) {
     notWorking.push({
       icon: '📱',
@@ -1103,16 +1654,10 @@ function renderInsights(posts, FOLLOWERS) {
 ════════════════════════════════════ */
 function renderReko(posts, FOLLOWERS) {
   const container  = document.getElementById('rekoContainer');
-  const roadmapEl  = document.getElementById('roadmapContainer');
-  const tsEl       = document.getElementById('tipsTimestamp');
+  const roadmapBody= document.getElementById('roadmapBody');
   if (!container) return;
 
-  const now    = new Date();
-  const tsStr  = now.toLocaleString('id-ID',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})+' WIB';
-  const updatedAt = window._appUpdatedAt || '—';
-  if (tsEl) tsEl.innerHTML = `<span>🕐</span><span>Tips dibuat: <strong>${tsStr}</strong> &nbsp;·&nbsp; Data dari scrape: <strong>${updatedAt}</strong></span>`;
-
-  if (!posts.length) { container.innerHTML = '<p style="font-size:12px;color:var(--dim);padding:8px">Tidak ada data di periode ini.</p>'; return; }
+  if (!posts.length) { container.innerHTML = '<p style="font-size:12px;color:var(--dim);padding:8px">Tidak ada data di periode ini.</p>'; if(roadmapBody) roadmapBody.innerHTML=''; return; }
 
   const erOf    = p => erPct(p, FOLLOWERS);
   const avgERall = posts.reduce((s,p)=>s+erOf(p),0)/posts.length;
@@ -1153,40 +1698,42 @@ function renderReko(posts, FOLLOWERS) {
 
   const rekoCards = [];
 
-  // Reko 1: format
   if (bestType && typeStats.length > 1) {
+    const dispType = bestType.type === 'Sidecar' ? 'Carousel' : bestType.type;
+    const dispWorst = worstType.type === 'Sidecar' ? 'Carousel' : worstType.type;
     const pct = ((bestType.avgER-avgERall)/avgERall*100).toFixed(0);
     rekoCards.push(mkReko('📊',
-      `Perbanyak ${bestType.type} — Format Terkuat`,
+      `Perbanyak ${dispType} — Format Terkuat`,
       `Format · Dampak tinggi · 3–4 minggu`,
-      `<strong>Data bilang:</strong> ${bestType.count} post ${bestType.type} avg ER <strong>${erFmt(bestType.avgER)}</strong> (${pct}% di atas rata-rata). Format ${worstType.type} hanya ${erFmt(worstType.avgER)}.`,
+      `<strong>Data bilang:</strong> ${bestType.count} post ${dispType} avg ER <strong>${erFmt(bestType.avgER)}</strong> (${pct}% di atas rata-rata). Format ${dispWorst} hanya ${erFmt(worstType.avgER)}.`,
       [
-        {icon:'🗂️', title:`Naikkan proporsi ${bestType.type} jadi min. 50% dari total posting`, desc:`Format ini terbukti dari data periode ini. Target: min. 2 post ${bestType.type} per bulan.`},
-        {icon:'🔬', title:`Replikasi struktur top post ke topik baru`, desc:`Lihat top 3 di tab Overview — pelajari angle, panjang caption, dan timing-nya.`},
-        {icon:'📉', title:`Kurangi frekuensi ${worstType.type} atau ubah angle-nya`, desc:`${worstType.count} post ${worstType.type} avg ER hanya ${erFmt(worstType.avgER)}. Evaluasi ulang hook dan topiknya.`}
+        {icon:'🗂️', title:`Naikkan proporsi ${dispType} jadi min. 50% dari total posting`, desc:`Format ini terbukti dari data periode ini. Target: min. 2 post ${dispType} per bulan.`},
+        {icon:'🔬', title:`Replikasi struktur top post ke topik baru`, desc:`Lihat Top 3 di tab Overview — pelajari angle, panjang caption, dan timing-nya.`},
+        {icon:'📉', title:`Kurangi frekuensi ${dispWorst} atau ubah angle-nya`, desc:`${worstType.count} post ${dispWorst} avg ER hanya ${erFmt(worstType.avgER)}. Evaluasi ulang hook dan topiknya.`}
       ], 4, '~3–4 minggu'
     ));
   }
 
-  // Reko 2: komentar
   if (pctZero > 30) {
     rekoCards.push(mkReko('💬',
       'Unlock Komentar — Caption Harus Memancing',
       `Engagement · Dampak sangat tinggi · Mulai sekarang`,
       `<strong>Data bilang:</strong> <strong>${pctZero}%</strong> post (${zeroCmt.length}/${posts.length}) dapat 0 komentar. ${withCmt.length > 0 ? 'Post dengan komentar avg ER '+erFmt(withCmt.reduce((s,p)=>s+erOf(p),0)/withCmt.length)+' vs rata-rata '+erFmt(avgERall)+'.':''}`,
       [
-        {icon:'❓', title:'Tutup setiap caption dengan 1 pertanyaan spesifik', desc:'Bukan "Setuju?" tapi pertanyaan yang butuh jawaban substantif dari pasien/follower — misalnya soal keluhan gigi yang sering dialami.'},
-        {icon:'🪞', title:'1 konten edukasi + testimoni per bulan', desc:'Konten yang membahas pengalaman pasien nyata terbukti dapat komentar lebih banyak.'},
+        {icon:'❓', title:'Tutup setiap caption dengan 1 pertanyaan spesifik', desc:'Misal "Kamu terakhir kontrol ke dokter gigi kapan?" — pertanyaan yang butuh jawaban substantif, bukan sekadar "Setuju?".'},
+        {icon:'🪞', title:'1 konten testimoni/cerita pasien per bulan', desc:'Konten personal & relatable terbukti dapat komentar lebih banyak dan membangun kepercayaan calon pasien.'},
         {icon:'⏱️', title:'Balas semua komentar dalam 1 jam pertama', desc:'Setiap balasan = komentar tambahan di thread. Algoritma hitung total komentar termasuk balasanmu.'}
       ], 5, '~1–2 minggu'
     ));
   }
 
-  // Reko 3: frekuensi
   if (months.length >= 2) {
     const highFreq = months.reduce((a,b)=>b[1].length>a[1].length?b:a);
     const highFreqER = highFreq[1].reduce((s,p)=>s+erOf(p),0)/highFreq[1].length;
-    const otherMonthsER = months.filter(m=>m[0]!==highFreq[0]).reduce((s,[,ps])=>s+ps.reduce((ss,p)=>ss+erOf(p),0)/ps.length,0)/(months.length-1);
+    const otherMonths = months.filter(m=>m[0]!==highFreq[0]);
+    const otherMonthsER = otherMonths.length
+      ? otherMonths.reduce((s,[,ps])=>s+ps.reduce((ss,p)=>ss+erOf(p),0)/ps.length,0) / otherMonths.length
+      : highFreqER;
     const isQualityBetter = otherMonthsER > highFreqER;
     rekoCards.push(mkReko('📌',
       isQualityBetter ? 'Kurangi Frekuensi — Fokus ke Kualitas' : 'Pertahankan Ritme Posting',
@@ -1195,292 +1742,95 @@ function renderReko(posts, FOLLOWERS) {
         ? `<strong>Data bilang:</strong> Bulan dengan posting terbanyak (${highFreq[0]}: ${highFreq[1].length} post) avg ER <strong>${erFmt(highFreqER)}</strong> — lebih rendah dari bulan lain (${erFmt(otherMonthsER)}). Lebih banyak ≠ lebih baik.`
         : `<strong>Data bilang:</strong> Rata-rata ${avgPostsPerMonth.toFixed(1)} post/bulan dengan ER yang konsisten. Pertahankan ritme ini dan fokus naikkan kualitas per post.`,
       [
-        {icon:'🎯', title: isQualityBetter ? `Target: max ${Math.max(3, Math.round(avgPostsPerMonth*0.7))} post per bulan` : 'Jaga konsistensi posting', desc: isQualityBetter ? 'Alokasikan waktu yang tersisa untuk riset topik dan copywriting yang lebih dalam.' : 'Konsistensi lebih penting dari fluktuasi besar. Buat content calendar 2 minggu ke depan.'},
-        {icon:'✍️', title:'Gunakan framework: Keluhan → Penyebab → Solusi klinik → Ajakan konsultasi', desc:'Format ini biasanya paling relevan untuk konten dental care — beri edukasi dulu sebelum soft-selling.'},
+        {icon:'🎯', title: isQualityBetter ? `Target: max ${Math.max(3, Math.round(avgPostsPerMonth*0.7))} post per bulan` : 'Jaga konsistensi posting', desc: isQualityBetter ? 'Alokasikan waktu yang tersisa untuk riset topik edukasi dan copywriting yang lebih dalam.' : 'Konsistensi lebih penting dari fluktuasi besar. Buat content calendar 2 minggu ke depan.'},
+        {icon:'✍️', title:'Gunakan framework: Keluhan → Penyebab → Solusi klinik → Ajakan konsultasi', desc:'Format ini relevan untuk konten dental care — edukasi dulu sebelum soft-selling.'},
         {icon:'🔄', title:'Review setiap 2 minggu: format dan topik mana yang perform?', desc:'Double-down pada yang berhasil. Jangan lanjutkan topik yang sudah 2× underperform berturut-turut.'}
       ], 3, '~2–4 minggu'
     ));
   }
 
-  container.innerHTML = rekoCards.join('');
+  container.innerHTML = rekoCards.length ? rekoCards.join('') : '<p style="font-size:12px;color:var(--dim);padding:8px">Belum cukup variasi data untuk rekomendasi spesifik.</p>';
 
-  // Roadmap
-  if (roadmapEl) {
-    roadmapEl.innerHTML = `
-      <div class="card" style="padding:0;overflow:hidden">
-        <table style="width:100%;border-collapse:collapse;font-size:12px;">
-          <thead><tr style="background:var(--bg);">
-            <th style="padding:8px 12px;text-align:left;font-weight:600;font-size:10px;color:var(--muted);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.05em;">Waktu</th>
-            <th style="padding:8px 12px;text-align:left;font-weight:600;font-size:10px;color:var(--muted);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.05em;">Aksi (berdasarkan data periode ini)</th>
-          </tr></thead>
-          <tbody>
-            <tr>
-              <td style="padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;white-space:nowrap;"><span style="background:var(--green-lt);color:var(--green);border-radius:4px;padding:2px 7px;font-size:10px;font-weight:600;">W1</span></td>
-              <td style="padding:10px 12px;border-bottom:1px solid var(--border);color:var(--ink);line-height:1.5;">Buat 1 post format <strong>${bestType ? bestType.type : 'Carousel'}</strong> (format terkuat periode ini). Tambah pertanyaan spesifik di akhir caption. Balas semua komentar dalam 1 jam.</td>
-            </tr>
-            <tr>
-              <td style="padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;white-space:nowrap;"><span style="background:var(--accent-lt);color:var(--accent);border-radius:4px;padding:2px 7px;font-size:10px;font-weight:600;">W2</span></td>
-              <td style="padding:10px 12px;border-bottom:1px solid var(--border);color:var(--ink);line-height:1.5;">Post 1 konten testimoni/behind-the-scenes klinik. Replikasi angle top post #1 ke topik baru yang belum pernah dibahas.</td>
-            </tr>
-            <tr>
-              <td style="padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;white-space:nowrap;"><span style="background:#fff7ed;color:var(--orange);border-radius:4px;padding:2px 7px;font-size:10px;font-weight:600;">W3</span></td>
-              <td style="padding:10px 12px;border-bottom:1px solid var(--border);color:var(--ink);line-height:1.5;">${worstType && typeStats.length>1 ? 'Hindari format <strong>'+worstType.type+'</strong> minggu ini — evaluasi apakah angle atau hook perlu diubah total.' : 'Fokus pada topik yang belum pernah diangkat. Hindari repetisi topik yang sama dalam &lt;2 minggu.'}</td>
-            </tr>
-            <tr>
-              <td style="padding:10px 12px;vertical-align:top;white-space:nowrap;"><span style="background:#e0e7ff;color:#3730a3;border-radius:4px;padding:2px 7px;font-size:10px;font-weight:600;">W4</span></td>
-              <td style="padding:10px 12px;color:var(--ink);line-height:1.5;">Review: cek tab Growth di dashboard ini. Post mana yang save-rate dan komentar tertinggi? Double-down topik dan format itu untuk bulan depan.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>`;
+  if (roadmapBody) {
+    roadmapBody.innerHTML = `
+      <tr>
+        <td style="padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;white-space:nowrap;"><span style="background:var(--green-lt);color:var(--green);border-radius:4px;padding:2px 7px;font-size:10px;font-weight:600;">W1</span></td>
+        <td style="padding:10px 12px;border-bottom:1px solid var(--border);color:var(--ink);line-height:1.5;">Buat 1 post format <strong>${bestType ? (bestType.type==='Sidecar'?'Carousel':bestType.type) : 'Carousel'}</strong> (format terkuat periode ini). Tambah pertanyaan spesifik di akhir caption. Balas semua komentar dalam 1 jam.</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;white-space:nowrap;"><span style="background:var(--accent-lt);color:var(--accent);border-radius:4px;padding:2px 7px;font-size:10px;font-weight:600;">W2</span></td>
+        <td style="padding:10px 12px;border-bottom:1px solid var(--border);color:var(--ink);line-height:1.5;">Post 1 konten testimoni/cerita pasien. Replikasi angle top post #1 ke topik edukasi baru yang belum pernah dibahas.</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;white-space:nowrap;"><span style="background:#fff7ed;color:var(--orange);border-radius:4px;padding:2px 7px;font-size:10px;font-weight:600;">W3</span></td>
+        <td style="padding:10px 12px;border-bottom:1px solid var(--border);color:var(--ink);line-height:1.5;">${worstType && typeStats.length>1 ? 'Hindari format <strong>'+(worstType.type==='Sidecar'?'Carousel':worstType.type)+'</strong> minggu ini — evaluasi apakah angle atau hook perlu diubah total.' : 'Fokus pada topik edukasi yang belum pernah diangkat. Hindari repetisi topik yang sama dalam &lt;2 minggu.'}</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 12px;vertical-align:top;white-space:nowrap;"><span style="background:#e0e7ff;color:#3730a3;border-radius:4px;padding:2px 7px;font-size:10px;font-weight:600;">W4</span></td>
+        <td style="padding:10px 12px;color:var(--ink);line-height:1.5;">Review: cek tab Growth di dashboard ini. Post mana yang komentar/save-nya tertinggi? Double-down topik dan format itu untuk bulan depan.</td>
+      </tr>`;
+  }
+}
+
+/* ── Dynamic notes for the Indeks tab (no hardcoded numbers) ── */
+function renderIndexDynamicNotes(fp) {
+  const f = _followers;
+  const overallER = _allPosts.length ? avgER(_allPosts, f) : 0;
+  const lb = erLabel(overallER);
+
+  const ctxEl = $('idxErContext');
+  if (ctxEl) {
+    ctxEl.innerHTML = f > 1
+      ? `<strong>Konteks akun ini:</strong> Dengan ${f.toLocaleString('id')} followers, avg ER historis @ummadentalcare adalah <strong>${overallER.toFixed(2)}%</strong> (${lb.txt}). Untuk akun klinik/kesehatan, ER 1–3% tergolong rata-rata, di atas 3% sudah bagus.`
+      : 'Belum ada data followers untuk menghitung konteks ER akun ini.';
+  }
+
+  const byType = _allPosts.reduce((acc,p)=>{ (acc[p.type]=acc[p.type]||[]).push(p); return acc; },{});
+  const typeStats = Object.entries(byType).map(([t,ps])=>({type:t,count:ps.length,avgER:ps.reduce((s,p)=>s+erPct(p,f),0)/ps.length})).sort((a,b)=>b.avgER-a.avgER);
+  const bestType = typeStats[0];
+
+  const noteEl = $('idxBenchmarkNote');
+  if (noteEl) {
+    if (!_allPosts.length) {
+      noteEl.innerHTML = '<strong>Catatan:</strong> Belum ada post ter-scrape. Jalankan workflow scrape di GitHub Actions untuk mengisi data pertama.';
+    } else {
+      const bestTxt = bestType ? `Format <strong>${bestType.type==='Sidecar'?'Carousel':bestType.type}</strong> (avg ER ${bestType.avgER.toFixed(2)}%) adalah yang paling efektif sejauh ini.` : '';
+      noteEl.innerHTML = `<strong>Catatan:</strong> Data terbaru menunjukkan avg ER ~${overallER.toFixed(2)}% dari ${_allPosts.length} post historis. ${bestTxt}`;
+    }
   }
 }
 
 /* ════════════════════════════════════
    GLOBAL FUNCTIONS
 ════════════════════════════════════ */
-function animateBarsGlobal() {
-  document.querySelectorAll('[data-w]').forEach(el => { el.style.width = el.dataset.w + '%'; });
+function animateBars() {
+  document.querySelectorAll('[data-w]').forEach(el=>{ el.style.width=el.dataset.w+'%'; });
 }
+function switchView(name,btn) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.header .tab-btn').forEach(b=>b.classList.remove('active'));
+  const target=$('view-'+name);
+  if(target) target.classList.add('active');
+  if(btn) btn.classList.add('active');
 
-function switchView(name, btn) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('.header .tab-btn').forEach(b => b.classList.remove('active'));
-  const target = document.getElementById('view-'+name);
-  if (target) target.classList.add('active');
-  if (btn) btn.classList.add('active');
-  setTimeout(animateBarsGlobal, 50);
+  // Date filter bar doesn't apply to the Indeks (glossary) tab — hide it there.
+  const showDateBar = name !== 'index';
+  $('dateRangeBar').style.display   = showDateBar ? 'flex' : 'none';
+  $('datePresetRow').style.display  = showDateBar ? 'flex' : 'none';
+
+  setTimeout(animateBars,60);
 }
-
-function renderPosts(filter, customPosts) {
-  const posts     = customPosts || getFilteredPosts();
-  const FOLLOWERS = window._appFollowers || 1;
-  const ICONS_MAP  = { Sidecar:'🗂️', Video:'🎬', Image:'🖼️' };
-  const TYPE_COLOR = { Sidecar:'#5046e4', Video:'#0ea5e9', Image:'#f59e0b' };
-
-  const ranked = [...posts].sort((a,b) => eng(b)-eng(a)).slice(0,20);
-  const container = document.getElementById('topPostsContainer');
-  if (!container) return;
-
-  if (!ranked.length) {
-    container.innerHTML = '<p style="color:var(--dim);font-size:12px;padding:8px 0">Tidak ada post di periode ini.</p>';
-    return;
-  }
-
-  container.innerHTML = ranked.map((p,i) => {
-    const er         = (eng(p)/FOLLOWERS*100).toFixed(3);
-    const typeColor  = TYPE_COLOR[p.type] || '#999';
-    const viewsHTML  = p.videoViewCount ? `<span class="post-views">👁 ${Number(p.videoViewCount).toLocaleString()}</span>` : '';
-    const linkHTML   = p.url ? `<a class="post-link" href="${p.url}" target="_blank" rel="noopener">Buka ↗</a>` : '';
-    const thumbHTML  = p.displayUrl
-      ? `<img src="${p.displayUrl}" alt="thumb" loading="lazy" onerror="this.parentElement.textContent='${ICONS_MAP[p.type]||'📄'}';">`
-      : (ICONS_MAP[p.type]||'📄');
-    const capInner   = p.url
-      ? `<a href="${p.url}" target="_blank" rel="noopener">${p.caption||'(no caption)'}</a>`
-      : (p.caption||'(no caption)');
-    return `
-      <div class="post-item">
-        <span class="post-rank">#${i+1}</span>
-        <div class="post-thumb">${thumbHTML}</div>
-        <div class="post-body">
-          <p class="post-caption">${capInner}</p>
-          <div class="post-meta">
-            <span class="post-tag" style="color:${typeColor};border-color:${typeColor}20;background:${typeColor}10">${p.type}</span>
-            <span class="post-tag">${p.timestamp}</span>
-            <span class="post-stat">❤️ ${p.likesCount.toLocaleString()} · 💬 ${p.commentsCount}</span>
-            ${viewsHTML}
-            <span class="post-er">${er}% ER</span>
-            ${linkHTML}
-          </div>
-        </div>
-      </div>`;
-  }).join('');
+function switchInsPane(name,btn) {
+  document.querySelectorAll('#view-insights .subpane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('#view-insights .subtab-btn').forEach(b=>b.classList.remove('active'));
+  $('ins-pane-'+name).classList.add('active');
+  if(btn) btn.classList.add('active');
 }
-
-function filterPosts(filter, btn) {
-  document.querySelectorAll('#view-posts .tab-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  renderPosts(filter);
-}
-
-/* ════════════════════════════════════
-   INIT — fetch JSON
-════════════════════════════════════ */
-async function init() {
-  showLoading();
-  let json;
-  try {
-    const res = await fetch(DATA_URL, { cache:'no-store' });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    json = await res.json();
-  } catch(e) {
-    document.body.insertAdjacentHTML('beforeend',
-      `<div style="position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;border-radius:8px;padding:10px 16px;font-size:12px;z-index:999;">⚠️ Gagal memuat data. Coba refresh.</div>`);
-    return;
-  }
-
-  const { profile, posts, updatedAt } = json;
-  const FOLLOWERS = profile.followersCount || 1;
-
-  // update badge
-  const badge = document.getElementById('scrapeBadge');
-  if (badge) {
-    badge.textContent = updatedAt
-      ? `Update ${new Date(updatedAt).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})}`
-      : 'Belum ada data';
-  }
-
-  if (!posts || !posts.length) {
-    document.querySelector('.section').insertAdjacentHTML('afterbegin',
-      `<div class="card" style="border-color:#fde68a;background:#fffbeb;color:#92400e;font-size:12px;padding:12px">Belum ada post ter-scrape. Jalankan workflow "Daily Instagram Scrape" di GitHub Actions, atau tunggu jadwal harian berikutnya.</div>`);
-  }
-
-  // expose globals
-  window._appPosts     = posts || [];
-  window._appFollowers = FOLLOWERS;
-  window._appAllPosts  = posts || [];
-  window._appUpdatedAt = updatedAt
-    ? new Date(updatedAt).toLocaleString('id-ID',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})+' WIB'
-    : '—';
-
-  if (!posts || !posts.length) { renderAll(); return; }
-
-  // init date range
-  const sortedAll = [...posts].sort((a,b) => a.timestamp.localeCompare(b.timestamp));
-  document.getElementById('dateFrom').value = sortedAll[0].timestamp;
-  document.getElementById('dateTo').value   = sortedAll[sortedAll.length-1].timestamp;
-
-  /* ── ER LINE CHART ── */
-  const chartPosts = [...posts].slice(0,12).reverse();
-  new Chart(document.getElementById('erChart'), {
-    type:'line',
-    data:{
-      labels: chartPosts.map(p => p.timestamp.slice(5)),
-      datasets:[{
-        data: chartPosts.map(p => +erPct(p,FOLLOWERS).toFixed(3)),
-        borderColor:ACCENT, backgroundColor:ACCENT+'15',
-        borderWidth:2, pointRadius:4, pointHoverRadius:6,
-        pointBackgroundColor:ACCENT, fill:true, tension:0.35,
-      }]
-    },
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false}, tooltip:{...TOOLTIP_OPTS, callbacks:{label:ctx=>' ER: '+ctx.parsed.y.toFixed(3)+'%'}} },
-      scales:{ y:{grid:{color:'#f0ede8'},ticks:{callback:v=>v+'%'}}, x:{grid:{display:false},ticks:{maxRotation:45}} }
-    }
-  });
-
-  /* ── CONTENT TYPE DOUGHNUT ── */
-  const typeCounts = posts.reduce((acc,p) => {
-    const t = p.type==='Sidecar'?'Carousel':p.type;
-    acc[t]=(acc[t]||0)+1; return acc;
-  }, {});
-  const typeLabels = Object.keys(typeCounts);
-  const typeColors = { Carousel:'#5046e4', Video:'#0ea5e9', Image:'#f59e0b' };
-
-  document.querySelector('.type-row').innerHTML = typeLabels.map(t =>
-    `<div class="type-pill"><span class="type-dot" style="background:${typeColors[t]||'#999'}"></span>${t} <strong style="margin-left:2px">${typeCounts[t]}</strong></div>`
-  ).join('');
-
-  new Chart(document.getElementById('typeChart'), {
-    type:'doughnut',
-    data:{ labels:typeLabels, datasets:[{ data:typeLabels.map(t=>typeCounts[t]), backgroundColor:typeLabels.map(t=>typeColors[t]||'#999'), borderColor:'#fff', borderWidth:2, hoverOffset:4 }] },
-    options:{ responsive:true, maintainAspectRatio:false, cutout:'62%', plugins:{ legend:{position:'right',labels:{boxWidth:10,padding:12}}, tooltip:{...TOOLTIP_OPTS} } }
-  });
-
-  /* ── FREQ BARS ── */
-  const byWeek     = groupBy(posts, isoWeek);
-  const weekKeys   = Object.keys(byWeek).sort().slice(-8);
-  const maxWPosts  = Math.max(...weekKeys.map(k => byWeek[k].length));
-  document.getElementById('freqContainer').innerHTML = weekKeys.map(k => {
-    const n = byWeek[k].length;
-    return `<div class="freq-item">
-      <span class="freq-label">${k.replace(/\d{4}-/,'')}</span>
-      <div class="freq-track"><div class="freq-fill" data-w="${(n/maxWPosts*100).toFixed(0)}">${n>1?n+'x':''}</div></div>
-      <span class="freq-val">${n}×</span>
-    </div>`;
-  }).join('');
-
-  /* ── GROWTH VIEW ── */
-  const byMonth  = groupBy(posts, isoMonth);
-  const monthKeys = Object.keys(byMonth).sort();
-  const allWeekKeys = Object.keys(byWeek).sort();
-  const wCurrKey = allWeekKeys.at(-1), wPrevKey = allWeekKeys.at(-2);
-  const mCurrKey = monthKeys.at(-1),   mPrevKey = monthKeys.at(-2);
-  const wCurrER  = wCurrKey ? avgER(byWeek[wCurrKey], FOLLOWERS) : null;
-  const wPrevER  = wPrevKey ? avgER(byWeek[wPrevKey], FOLLOWERS) : null;
-  const mCurrER  = mCurrKey ? avgER(byMonth[mCurrKey], FOLLOWERS) : null;
-  const mPrevER  = mPrevKey ? avgER(byMonth[mPrevKey], FOLLOWERS) : null;
-
-  if (wCurrKey && wPrevKey) {
-    const wowD = (wCurrER-wPrevER)/wPrevER*100;
-    const maxW = Math.max(wCurrER,wPrevER)*1.2;
-    document.getElementById('wowCards').innerHTML = `
-      <div class="growth-card">
-        <p class="growth-period">${wPrevKey}</p>
-        <div class="growth-er-row"><span class="growth-er">${erFmt(wPrevER)}</span></div>
-        <p style="font-size:11px;color:var(--muted)">${byWeek[wPrevKey].length} posts</p>
-        <div class="growth-bar-track"><div class="growth-bar-fill" style="width:${(wPrevER/maxW*100).toFixed(0)}%;background:var(--dim)"></div></div>
-      </div>
-      <div class="growth-card">
-        <p class="growth-period">${wCurrKey}</p>
-        <div class="growth-er-row">
-          <span class="growth-er" style="color:var(--accent)">${erFmt(wCurrER)}</span>
-          <span class="delta ${wowD>=0?'up':'down'}">${wowD>=0?'▲':'▼'} ${Math.abs(wowD).toFixed(1)}%</span>
-        </div>
-        <p style="font-size:11px;color:var(--muted)">${byWeek[wCurrKey].length} posts</p>
-        <div class="growth-bar-track"><div class="growth-bar-fill" style="width:${(wCurrER/maxW*100).toFixed(0)}%"></div></div>
-      </div>`;
-  }
-
-  let momDelta = null;
-  if (mCurrKey && mPrevKey) {
-    momDelta = (mCurrER-mPrevER)/mPrevER*100;
-    const maxM = Math.max(mCurrER,mPrevER)*1.1;
-    document.getElementById('momCards').innerHTML = `
-      <div class="growth-card">
-        <p class="growth-period">${mPrevKey}</p>
-        <div class="growth-er-row"><span class="growth-er">${erFmt(mPrevER)}</span></div>
-        <p style="font-size:11px;color:var(--muted)">${byMonth[mPrevKey].length} posts</p>
-        <div class="growth-bar-track"><div class="growth-bar-fill" style="width:${(mPrevER/maxM*100).toFixed(0)}%;background:var(--dim)"></div></div>
-      </div>
-      <div class="growth-card">
-        <p class="growth-period">${mCurrKey}</p>
-        <div class="growth-er-row">
-          <span class="growth-er" style="color:${momDelta<0?'var(--red)':'var(--accent)'}">${erFmt(mCurrER)}</span>
-          <span class="delta ${momDelta>=0?'up':'down'}">${momDelta>=0?'▲':'▼'} ${Math.abs(momDelta).toFixed(1)}%</span>
-        </div>
-        <p style="font-size:11px;color:var(--muted)">${byMonth[mCurrKey].length} posts</p>
-        <div class="growth-bar-track"><div class="growth-bar-fill" style="width:${(mCurrER/maxM*100).toFixed(0)}%;background:${momDelta<0?'var(--red)':'var(--accent)'}"></div></div>
-      </div>`;
-
-    const insightEl = document.getElementById('mom-insight');
-    if (insightEl) {
-      const dir = momDelta<0?'turun':'naik';
-      insightEl.style.background   = momDelta<0?'#fffbeb':'#f0fdf4';
-      insightEl.style.borderColor  = momDelta<0?'#fde68a':'#bbf7d0';
-      insightEl.querySelector('p:first-child').style.color = momDelta<0?'#92400e':'#14532d';
-      insightEl.querySelector('p:last-child').style.color  = momDelta<0?'#92400e':'#14532d';
-      insightEl.querySelector('p:first-child').textContent = `${momDelta<0?'⚠️':'✅'} MoM ${dir} ${Math.abs(momDelta).toFixed(1)}%`;
-      insightEl.querySelector('p:last-child').textContent  =
-        `${mCurrKey} (${byMonth[mCurrKey].length} posts, ER ${erFmt(mCurrER)}) vs ${mPrevKey} (${byMonth[mPrevKey].length} posts, ER ${erFmt(mPrevER)}). `+
-        (momDelta<0?'Posting lebih sering tidak selalu = engagement lebih tinggi.':'Momentum bagus! Pertahankan format dan topik yang bekerja.');
-    }
-  }
-
-  new Chart(document.getElementById('weeklyChart'), {
-    type:'bar',
-    data:{ labels:allWeekKeys.slice(-10).map(k=>k.replace(/\d{4}-/,'')), datasets:[{ data:allWeekKeys.slice(-10).map(k=>+avgER(byWeek[k],FOLLOWERS).toFixed(3)), backgroundColor:allWeekKeys.slice(-10).map((_,i,a)=>i===a.length-1?ACCENT:ACCENT+'55'), borderRadius:5, borderSkipped:false }] },
-    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false},tooltip:{...TOOLTIP_OPTS,callbacks:{label:ctx=>' ER: '+ctx.parsed.y.toFixed(3)+'%'}}}, scales:{y:{grid:{color:'#f0ede8'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}} }
-  });
-
-  new Chart(document.getElementById('monthlyChart'), {
-    type:'bar',
-    data:{ labels:monthKeys, datasets:[{ data:monthKeys.map(k=>+avgER(byMonth[k],FOLLOWERS).toFixed(3)), backgroundColor:monthKeys.map((_,i,a)=>i===a.length-1?ACCENT:ACCENT+'55'), borderRadius:5, borderSkipped:false }] },
-    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false},tooltip:{...TOOLTIP_OPTS,callbacks:{label:ctx=>' ER: '+ctx.parsed.y.toFixed(3)+'%'}}}, scales:{y:{grid:{color:'#f0ede8'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}} }
-  });
-
-  setTimeout(() => { renderAll(); animateBarsGlobal(); }, 0);
+function switchIdxPane(name,btn) {
+  document.querySelectorAll('#view-index .subpane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('#view-index .subtab-btn').forEach(b=>b.classList.remove('active'));
+  $('idx-pane-'+name).classList.add('active');
+  if(btn) btn.classList.add('active');
 }
 
 init();
